@@ -1,0 +1,10 @@
+{
+  "name": "Image Reader",
+  "description": "Image reader on a website for the blind",
+  "version": "1.0",
+  "manifest_version": 3,
+
+  "action": {
+    "default_popup": "popup.html"
+  }
+}
