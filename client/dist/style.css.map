@@ -1,0 +1,1 @@
+{"version":3,"file":"style.css","mappings":";;;AAWA;EACE;AAVF,C","sources":["webpack://client/./src/style.scss"],"sourcesContent":["// .switch {\n//   position: relative;\n//   display: inline-block;\n//   width: 60px;\n//   height: 34px;\n// }\n\n// .switch input {\n//   opacity: 0;\n// }\n\nbody {\n  background-color: black;\n}\n"],"names":[],"sourceRoot":""}
