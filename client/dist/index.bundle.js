@@ -21,7 +21,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "body {\n  background-color: yellow;\n}", "",{"version":3,"sources":["webpack://./src/style.scss"],"names":[],"mappings":"AAWA;EACE,wBAAA;AAVF","sourcesContent":["// .switch {\n//   position: relative;\n//   display: inline-block;\n//   width: 60px;\n//   height: 34px;\n// }\n\n// .switch input {\n//   opacity: 0;\n// }\n\nbody {\n  background-color: yellow;\n}\n"],"sourceRoot":""}]);
+___CSS_LOADER_EXPORT___.push([module.id, ".switch {\n  position: relative;\n  display: inline-block;\n  width: 3.75rem;\n  height: 2.125rem;\n}\n.switch input {\n  opacity: 0;\n  width: 0;\n  height: 0;\n}\n.switch input:checked + .slider {\n  background-color: #00ff00;\n}\n.switch input:checked + .slider::before {\n  -webkit-transform: translateX(1.625rem);\n  transform: translateX(1.625rem);\n}\n.switch .slider {\n  position: absolute;\n  cursor: pointer;\n  top: 0;\n  left: 0;\n  right: 0;\n  bottom: 0;\n  border-radius: 2.125rem;\n  background-color: #ccc;\n  -webkit-transition: 0.4s;\n  transition: 0.4s;\n}\n.switch .slider::before {\n  position: absolute;\n  content: \"\";\n  height: 1.625rem;\n  width: 1.625rem;\n  left: 0.25rem;\n  bottom: 0.25rem;\n  border-radius: 50%;\n  background-color: white;\n  -webkit-transition: 0.4s;\n  transition: 0.4s;\n}", "",{"version":3,"sources":["webpack://./src/style.scss"],"names":[],"mappings":"AAAA;EACE,kBAAA;EACA,qBAAA;EACA,cAAA;EACA,gBAAA;AACF;AACE;EACE,UAAA;EACA,QAAA;EACA,SAAA;AACJ;AACI;EACE,yBAAA;AACN;AACM;EACE,uCAAA;EACA,+BAAA;AACR;AAIE;EACE,kBAAA;EACA,eAAA;EACA,MAAA;EACA,OAAA;EACA,QAAA;EACA,SAAA;EACA,uBAAA;EACA,sBAAA;EACA,wBAAA;EACA,gBAAA;AAFJ;AAKE;EACE,kBAAA;EACA,WAAA;EACA,gBAAA;EACA,eAAA;EACA,aAAA;EACA,eAAA;EACA,kBAAA;EACA,uBAAA;EACA,wBAAA;EACA,gBAAA;AAHJ","sourcesContent":[".switch {\n  position: relative;\n  display: inline-block;\n  width: 3.75rem;\n  height: 2.125rem;\n\n  input {\n    opacity: 0;\n    width: 0;\n    height: 0;\n\n    &:checked + .slider {\n      background-color: #00ff00;\n\n      &::before {\n        -webkit-transform: translateX(1.625rem);\n        transform: translateX(1.625rem);\n      }\n    }\n  }\n\n  .slider {\n    position: absolute;\n    cursor: pointer;\n    top: 0;\n    left: 0;\n    right: 0;\n    bottom: 0;\n    border-radius: 2.125rem;\n    background-color: #ccc;\n    -webkit-transition: 0.4s;\n    transition: 0.4s;\n  }\n\n  .slider::before {\n    position: absolute;\n    content: '';\n    height: 1.625rem;\n    width: 1.625rem;\n    left: 0.25rem;\n    bottom: 0.25rem;\n    border-radius: 50%;\n    background-color: white;\n    -webkit-transition: 0.4s;\n    transition: 0.4s;\n  }\n}\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -607,9 +607,6 @@ var __webpack_exports__ = {};
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _style_scss__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./style.scss */ "./src/style.scss");
 
-var $body = document.querySelector('body');
-if ($body)
-    $body.innerText = 'HI';
 
 })();
 

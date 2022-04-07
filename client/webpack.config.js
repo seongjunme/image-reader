@@ -22,7 +22,11 @@ module.exports = {
       },
       {
         test: /\.(sa|sc|c)ss$/,
-        use: [isDevelopment ? 'style-loader' : MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader'],
+        use: [
+          isDevelopment ? 'style-loader' : MiniCssExtractPlugin.loader,
+          'css-loader',
+          'sass-loader',
+        ],
       },
       {
         test: /\.(png|jpe?g|gif|svg|ico)$/i,
@@ -36,7 +40,13 @@ module.exports = {
     ],
   },
   resolve: {
-    extensions: ['.ts', '.js'],
+    extensions: ['.js', '.ts', '.json'],
+    alias: {
+      '@components': path.resolve(__dirname, 'src/components'),
+      '@layouts': path.resolve(__dirname, 'src/layouts'),
+      '@utils': path.resolve(__dirname, 'src/utils'),
+      '@typings': path.resolve(__dirname, 'src/typings'),
+    },
   },
   plugins: [
     new HtmlWebpackPlugin({
@@ -46,7 +56,9 @@ module.exports = {
     isDevelopment
       ? new MiniCssExtractPlugin({
           filename: isDevelopment ? '[name].css' : '[name].[contenthash].css',
-          chunkFilename: isDevelopment ? '[name].css' : '[id].[contenthash].css',
+          chunkFilename: isDevelopment
+            ? '[name].css'
+            : '[id].[contenthash].css',
         })
       : null,
   ],
