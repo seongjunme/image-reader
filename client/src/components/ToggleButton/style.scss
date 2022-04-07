@@ -1,0 +1,20 @@
+.switch {
+  width: 6.25rem;
+  height: 3.125rem;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.125rem;
+  margin: 0 auto;
+  border: 0;
+  cursor: pointer;
+}
+
+.off {
+  background-color: red;
+}
+
+.on {
+  background-color: green;
+}
