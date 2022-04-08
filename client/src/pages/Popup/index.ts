@@ -1,4 +1,4 @@
-import App from '../../layout/App';
+import App from '@layouts/App';
 import './style.scss';
 
 const $app = document.querySelector('#app');

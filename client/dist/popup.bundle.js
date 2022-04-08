@@ -28,10 +28,10 @@ ___CSS_LOADER_EXPORT___.push([module.id, ".switch {\n  width: 6.25rem;\n  height
 
 /***/ }),
 
-/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./src/layout/App/style.scss":
-/*!****************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./src/layout/App/style.scss ***!
-  \****************************************************************************************************************/
+/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./src/layouts/App/style.scss":
+/*!*****************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./src/layouts/App/style.scss ***!
+  \*****************************************************************************************************************/
 /***/ ((module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -47,7 +47,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "#app {\n  width: 300px;\n  height: 300px;\n}", "",{"version":3,"sources":["webpack://./src/layout/App/style.scss"],"names":[],"mappings":"AAAA;EACE,YAAA;EACA,aAAA;AACF","sourcesContent":["#app {\n  width: 300px;\n  height: 300px;\n}\n"],"sourceRoot":""}]);
+___CSS_LOADER_EXPORT___.push([module.id, "#app {\n  width: 300px;\n  height: 300px;\n}", "",{"version":3,"sources":["webpack://./src/layouts/App/style.scss"],"names":[],"mappings":"AAAA;EACE,YAAA;EACA,aAAA;AACF","sourcesContent":["#app {\n  width: 300px;\n  height: 300px;\n}\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -276,10 +276,10 @@ var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js
 
 /***/ }),
 
-/***/ "./src/layout/App/style.scss":
-/*!***********************************!*\
-  !*** ./src/layout/App/style.scss ***!
-  \***********************************/
+/***/ "./src/layouts/App/style.scss":
+/*!************************************!*\
+  !*** ./src/layouts/App/style.scss ***!
+  \************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -298,7 +298,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__);
 /* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! !../../../node_modules/style-loader/dist/runtime/styleTagTransform.js */ "./node_modules/style-loader/dist/runtime/styleTagTransform.js");
 /* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__);
-/* harmony import */ var _node_modules_css_loader_dist_cjs_js_node_modules_sass_loader_dist_cjs_js_style_scss__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! !!../../../node_modules/css-loader/dist/cjs.js!../../../node_modules/sass-loader/dist/cjs.js!./style.scss */ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./src/layout/App/style.scss");
+/* harmony import */ var _node_modules_css_loader_dist_cjs_js_node_modules_sass_loader_dist_cjs_js_style_scss__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! !!../../../node_modules/css-loader/dist/cjs.js!../../../node_modules/sass-loader/dist/cjs.js!./style.scss */ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./src/layouts/App/style.scss");
 
       
       
@@ -738,10 +738,10 @@ var ToggleButton = function (_a) {
 
 /***/ }),
 
-/***/ "./src/layout/App/index.ts":
-/*!*********************************!*\
-  !*** ./src/layout/App/index.ts ***!
-  \*********************************/
+/***/ "./src/layouts/App/index.ts":
+/*!**********************************!*\
+  !*** ./src/layouts/App/index.ts ***!
+  \**********************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -749,7 +749,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var _components_ToggleButton__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @components/ToggleButton */ "./src/components/ToggleButton/index.ts");
-/* harmony import */ var _style_scss__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./style.scss */ "./src/layout/App/style.scss");
+/* harmony import */ var _style_scss__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./style.scss */ "./src/layouts/App/style.scss");
 
 
 var App = function (_a) {
@@ -844,13 +844,13 @@ var __webpack_exports__ = {};
   !*** ./src/pages/Popup/index.ts ***!
   \**********************************/
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _layout_App__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../layout/App */ "./src/layout/App/index.ts");
+/* harmony import */ var _layouts_App__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @layouts/App */ "./src/layouts/App/index.ts");
 /* harmony import */ var _style_scss__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./style.scss */ "./src/pages/Popup/style.scss");
 
 
 var $app = document.querySelector('#app');
 if ($app)
-    (0,_layout_App__WEBPACK_IMPORTED_MODULE_0__["default"])({ $app: $app }).render();
+    (0,_layouts_App__WEBPACK_IMPORTED_MODULE_0__["default"])({ $app: $app }).render();
 
 })();
 
