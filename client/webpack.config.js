@@ -8,10 +8,13 @@ module.exports = {
   name: 'image-reader',
   mode: isDevelopment ? 'development' : 'production',
   devtool: isDevelopment ? 'hidden-source-map' : 'inline-source-map',
-  entry: './src/index.ts',
+  entry: {
+    popup: path.resolve(__dirname, 'src', 'pages', 'Popup', 'index.ts'),
+    background: path.resolve(__dirname, 'src', 'pages', 'Background', 'index.ts'),
+  },
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: 'index.bundle.js',
+    filename: '[name].bundle.js',
   },
   module: {
     rules: [
@@ -50,15 +53,13 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: path.resolve(__dirname, 'src', 'index.html'),
-      inject: true,
+      template: path.resolve(__dirname, 'src', 'pages', 'Popup', 'index.html'),
+      filename: 'popup.html',
     }),
     isDevelopment
       ? new MiniCssExtractPlugin({
           filename: isDevelopment ? '[name].css' : '[name].[contenthash].css',
-          chunkFilename: isDevelopment
-            ? '[name].css'
-            : '[id].[contenthash].css',
+          chunkFilename: isDevelopment ? '[name].css' : '[id].[contenthash].css',
         })
       : null,
   ],
