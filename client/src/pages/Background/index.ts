@@ -1,2 +1,3 @@
-let a = 1;
-console.log(++a);
+chrome.runtime.onInstalled.addListener(() => {
+  chrome.storage.sync.set({ isSystemRun: false });
+});

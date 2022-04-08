@@ -5,8 +5,9 @@ var __webpack_exports__ = {};
   !*** ./src/pages/Background/index.ts ***!
   \***************************************/
 
-var a = 1;
-console.log(++a);
+chrome.runtime.onInstalled.addListener(function () {
+    chrome.storage.sync.set({ isSystemRun: false });
+});
 
 /******/ })()
 ;

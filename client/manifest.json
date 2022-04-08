@@ -8,5 +8,6 @@
   },
   "action": {
     "default_popup": "dist/popup.html"
-  }
+  },
+  "permissions": ["storage"]
 }

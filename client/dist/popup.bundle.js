@@ -701,9 +701,20 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var _style_scss__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./style.scss */ "./src/components/ToggleButton/style.scss");
+var __assign = (undefined && undefined.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 
 var ToggleButton = function (_a) {
-    var _b = _a.initialState, initialState = _b === void 0 ? { on: false } : _b, $parent = _a.$parent;
+    var initialState = _a.initialState, $parent = _a.$parent, onClick = _a.onClick;
     var $target = document.createElement('button');
     var state = initialState;
     var init = function () {
@@ -717,20 +728,19 @@ var ToggleButton = function (_a) {
         $target.innerHTML = "\n      <span>".concat(on ? 'On' : 'Off', "</span>\n    ");
     };
     var bindEvents = function () {
-        $target.addEventListener('click', function (event) {
-            var on = state.on;
-            setState({ on: !on });
-        });
+        if (onClick)
+            $target.addEventListener('click', onClick);
     };
-    var setState = function (newState) {
-        state = newState;
+    var setState = function (_a) {
+        var on = _a.on;
+        state = __assign(__assign({}, state), { on: on });
         render();
     };
     init();
-    render();
     bindEvents();
     return {
         setState: setState,
+        render: render,
     };
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ToggleButton);
@@ -750,19 +760,47 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _components_ToggleButton__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @components/ToggleButton */ "./src/components/ToggleButton/index.ts");
 /* harmony import */ var _style_scss__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./style.scss */ "./src/layouts/App/style.scss");
+var __assign = (undefined && undefined.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 
 
 var App = function (_a) {
     var $app = _a.$app;
-    var render = function () {
-        (0,_components_ToggleButton__WEBPACK_IMPORTED_MODULE_0__["default"])({
-            initialState: { on: false },
-            $parent: $app,
+    var state = { isSystemRun: false };
+    var $ToggleButton = (0,_components_ToggleButton__WEBPACK_IMPORTED_MODULE_0__["default"])({
+        initialState: { on: state.isSystemRun },
+        $parent: $app,
+        onClick: function (event) {
+            chrome.storage.sync.set({
+                isSystemRun: !state.isSystemRun,
+            });
+            setState(__assign(__assign({}, state), { isSystemRun: !state.isSystemRun }));
+        },
+    });
+    var init = function () {
+        chrome.storage.sync.get(function (_a) {
+            var isSystemRun = _a.isSystemRun;
+            return setState(__assign(__assign({}, state), { isSystemRun: isSystemRun }));
         });
     };
-    return {
-        render: render,
+    var render = function () {
+        $ToggleButton.setState({ on: state.isSystemRun });
     };
+    var setState = function (_a) {
+        var isSystemRun = _a.isSystemRun;
+        state = __assign(__assign({}, state), { isSystemRun: isSystemRun });
+        render();
+    };
+    init();
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (App);
 
@@ -850,7 +888,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var $app = document.querySelector('#app');
 if ($app)
-    (0,_layouts_App__WEBPACK_IMPORTED_MODULE_0__["default"])({ $app: $app }).render();
+    (0,_layouts_App__WEBPACK_IMPORTED_MODULE_0__["default"])({ $app: $app });
 
 })();
 

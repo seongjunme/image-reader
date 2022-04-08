@@ -5,17 +5,40 @@ interface Props {
   $app: Element;
 }
 
+interface State {
+  isSystemRun: boolean;
+}
+
 const App = ({ $app }: Props) => {
-  const render = () => {
-    ToggleButton({
-      initialState: { on: false },
-      $parent: $app,
-    });
+  let state: State = { isSystemRun: false };
+
+  const $ToggleButton = ToggleButton({
+    initialState: { on: state.isSystemRun },
+    $parent: $app,
+    onClick: (event: MouseEvent) => {
+      chrome.storage.sync.set({
+        isSystemRun: !state.isSystemRun,
+      });
+      setState({ ...state, isSystemRun: !state.isSystemRun });
+    },
+  });
+
+  const init = () => {
+    chrome.storage.sync.get(({ isSystemRun }) =>
+      setState({ ...state, isSystemRun }),
+    );
   };
 
-  return {
-    render,
+  const render = () => {
+    $ToggleButton.setState({ on: state.isSystemRun });
   };
+
+  const setState = ({ isSystemRun }: State) => {
+    state = { ...state, isSystemRun };
+    render();
+  };
+
+  init();
 };
 
 export default App;

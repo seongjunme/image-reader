@@ -5,10 +5,7 @@ interface State {
   on: boolean;
 }
 
-const ToggleButton = ({
-  initialState = { on: false },
-  $parent,
-}: ComponentProps<State>) => {
+const ToggleButton = ({ initialState, $parent, onClick }: ComponentProps<State>) => {
   const $target = document.createElement('button');
   let state = initialState;
 
@@ -27,23 +24,20 @@ const ToggleButton = ({
   };
 
   const bindEvents = () => {
-    $target.addEventListener('click', (event: MouseEvent) => {
-      const { on } = state;
-      setState({ on: !on });
-    });
+    if (onClick) $target.addEventListener('click', onClick);
   };
 
-  const setState = (newState: State) => {
-    state = newState;
+  const setState = ({ on }: State) => {
+    state = { ...state, on };
     render();
   };
 
   init();
-  render();
   bindEvents();
 
   return {
     setState,
+    render,
   };
 };
 
