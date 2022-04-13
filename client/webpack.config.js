@@ -8,10 +8,14 @@ module.exports = {
   name: 'image-reader',
   mode: isDevelopment ? 'development' : 'production',
   devtool: isDevelopment ? 'hidden-source-map' : 'inline-source-map',
-  entry: './src/index.ts',
+  entry: {
+    popup: path.resolve(__dirname, 'src', 'popup', 'index.ts'),
+    background: path.resolve(__dirname, 'src', 'background', 'index.ts'),
+    content: path.resolve(__dirname, 'src', 'content', 'index.ts'),
+  },
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: 'index.bundle.js',
+    filename: '[name].bundle.js',
   },
   module: {
     rules: [
@@ -22,7 +26,11 @@ module.exports = {
       },
       {
         test: /\.(sa|sc|c)ss$/,
-        use: [isDevelopment ? 'style-loader' : MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader'],
+        use: [
+          isDevelopment ? 'style-loader' : MiniCssExtractPlugin.loader,
+          'css-loader',
+          'sass-loader',
+        ],
       },
       {
         test: /\.(png|jpe?g|gif|svg|ico)$/i,
@@ -36,12 +44,19 @@ module.exports = {
     ],
   },
   resolve: {
-    extensions: ['.ts', '.js'],
+    extensions: ['.js', '.ts', '.json'],
+    alias: {
+      '@components': path.resolve(__dirname, 'src/components'),
+      '@layouts': path.resolve(__dirname, 'src/layouts'),
+      '@utils': path.resolve(__dirname, 'src/utils'),
+      '@typings': path.resolve(__dirname, 'src/typings'),
+    },
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: path.resolve(__dirname, 'src', 'index.html'),
-      inject: true,
+      template: path.resolve(__dirname, 'src', 'popup', 'index.html'),
+      filename: 'popup.html',
+      chunks: ['popup'],
     }),
     isDevelopment
       ? new MiniCssExtractPlugin({

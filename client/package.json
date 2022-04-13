@@ -7,6 +7,7 @@
     "build": "npx webpack --watch"
   },
   "devDependencies": {
+    "@types/chrome": "^0.0.180",
     "css-loader": "^6.7.1",
     "css-modules-typescript-loader": "^4.0.1",
     "dotenv": "^16.0.0",
