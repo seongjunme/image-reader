@@ -3,11 +3,19 @@
   "description": "Image reader on a website for the blind",
   "version": "1.0",
   "manifest_version": 3,
+
   "background": {
     "service_worker": "dist/background.bundle.js"
   },
+  "content_scripts": [
+    {
+      "matches": ["https://*/*", "http://*/*", "<all_urls>"],
+      "js": ["dist/content.bundle.js"]
+    }
+  ],
   "action": {
     "default_popup": "dist/popup.html"
   },
-  "permissions": ["storage"]
+  "permissions": ["storage", "tabs", "scripting", "activeTab"],
+  "host_permissions": ["https://*/*", "http://*/*", "<all_urls>"]
 }

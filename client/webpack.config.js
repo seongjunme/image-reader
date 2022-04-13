@@ -9,8 +9,9 @@ module.exports = {
   mode: isDevelopment ? 'development' : 'production',
   devtool: isDevelopment ? 'hidden-source-map' : 'inline-source-map',
   entry: {
-    popup: path.resolve(__dirname, 'src', 'pages', 'Popup', 'index.ts'),
-    background: path.resolve(__dirname, 'src', 'pages', 'Background', 'index.ts'),
+    popup: path.resolve(__dirname, 'src', 'popup', 'index.ts'),
+    background: path.resolve(__dirname, 'src', 'background', 'index.ts'),
+    content: path.resolve(__dirname, 'src', 'content', 'index.ts'),
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
@@ -53,8 +54,9 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: path.resolve(__dirname, 'src', 'pages', 'Popup', 'index.html'),
+      template: path.resolve(__dirname, 'src', 'popup', 'index.html'),
       filename: 'popup.html',
+      chunks: ['popup'],
     }),
     isDevelopment
       ? new MiniCssExtractPlugin({
