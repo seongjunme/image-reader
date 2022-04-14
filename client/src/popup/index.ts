@@ -6,45 +6,50 @@ class Popup {
     this.$systemRunButton = document.querySelector('.switch');
     if (!this.$systemRunButton) return;
 
-    this.renderButton(this.$systemRunButton);
-    this.setup();
+    this.renderButton();
+    this.bindEvent();
   }
 
-  setup() {
-    this.$systemRunButton?.addEventListener('click', async () => {
+  bindEvent() {
+    this.$systemRunButton?.addEventListener('click', () => {
       if (!this.$systemRunButton) return;
-      this.toggleButton(this.$systemRunButton);
-
-      const tabs = await chrome.tabs.query({});
-      for (const tab of tabs) {
-        if (tab.url?.match(/chrome:\/\/*/g) || !tab.id) continue;
-        chrome.scripting.executeScript({
-          target: { tabId: tab.id },
-          files: ['dist/content.bundle.js'],
-        });
-      }
+      this.toggleRunStatus();
+      this.runContentScript();
     });
   }
 
-  renderButton($button: Element) {
+  renderButton() {
     chrome.storage.sync.get(({ isSystemRun }) => {
+      if (!this.$systemRunButton) return;
+
       if (isSystemRun) {
-        $button.className = 'switch on';
-        const $span = $button.querySelector('span');
+        this.$systemRunButton.className = 'switch on';
+        const $span = this.$systemRunButton.querySelector('span');
         if ($span) $span.textContent = 'On';
       } else {
-        $button.className = 'switch off';
-        const $span = $button.querySelector('span');
+        this.$systemRunButton.className = 'switch off';
+        const $span = this.$systemRunButton.querySelector('span');
         if ($span) $span.textContent = 'Off';
       }
     });
   }
 
-  toggleButton($button: Element) {
+  toggleRunStatus() {
     chrome.storage.sync.get(async ({ isSystemRun }) => {
       await chrome.storage.sync.set({ isSystemRun: !isSystemRun });
-      this.renderButton($button);
+      this.renderButton();
     });
+  }
+
+  async runContentScript() {
+    const tabs = await chrome.tabs.query({});
+    for (const tab of tabs) {
+      if (tab.url?.match(/chrome:\/\/*/g) || !tab.id) continue;
+      chrome.scripting.executeScript({
+        target: { tabId: tab.id },
+        files: ['dist/content.bundle.js'],
+      });
+    }
   }
 }
 
