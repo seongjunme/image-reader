@@ -1,10 +1,12 @@
+import axios from 'axios'
+
 const setup = () => {
   addOnClickBodyToWindow();
 };
 
 const addOnClickBodyToWindow = () => {
   if (!window.onClickBody) {
-    window.onClickBody = (e: MouseEvent) => {
+    window.onClickBody = async (e: MouseEvent) => {
       e.preventDefault();
       e.stopPropagation();
 
@@ -15,6 +17,19 @@ const addOnClickBodyToWindow = () => {
         const { top, left, width, height } = targetElement.getBoundingClientRect();
         resizeCanvas({ top, left, width, height });
         drawRectCanvas();
+
+        const formData = new FormData()
+        formData.append('imageSrc', targetElement.currentSrc)
+        const res = await axios({
+          method: 'post',
+          url: 'http://localhost:8000/ocr/',
+          data: formData,
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        })
+        console.log(res)
+
       } else {
         clearCanvas();
       }

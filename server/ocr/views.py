@@ -12,11 +12,10 @@ LIMIT_PX = 1024
 LIMIT_BYTE = 1024*1024  # 1MB
 LIMIT_BOX = 40
 
-
 rest_api_key = 'b77911913bc47a764fa0f35202bd0a66'
 
 def index(request):
-    return HttpResponse("hi django")
+    return HttpResponse("hi index")
 
 
 def ocr(request):
@@ -71,20 +70,27 @@ def kakao_ocr(image_path: str, appkey: str):
 def ocr_main(request):
     if len(sys.argv) != 3:
         print("Please run with args: $ python example.py /path/to/image appkey")
-    image_path, appkey = './test.png','b77911913bc47a764fa0f35202bd0a66'
 
-    resize_impath = kakao_ocr_resize(image_path)
-    if resize_impath is not None:
-        image_path = resize_impath
-        print("원본 대신 리사이즈된 이미지를 사용합니다.")
+    if request.method == 'GET':
+        return HttpResponse("method is get")
 
-    f = open("./str.txt", 'w')
-    output = kakao_ocr(image_path, appkey).json()
-    data = "[OCR] output:\n{}\n".format(json.dumps(output, sort_keys=True, indent=2, ensure_ascii=False))
+    elif request.method == 'POST':
+        image_path = request.POST['imageSrc']
+        #image_path = './test.png'
+        appkey = 'b77911913bc47a764fa0f35202bd0a66'
 
-    f.write(data)
-    f.close()
+        resize_impath = kakao_ocr_resize(image_path)
+        if resize_impath is not None:
+            image_path = resize_impath
+            print("원본 대신 리사이즈된 이미지를 사용합니다.")
 
-    return HttpResponse("ocr complete!")
+        f = open("./text.txt", 'w')
+        output = kakao_ocr(image_path, appkey).json()
+        data = "[OCR] output:\n{}\n".format(json.dumps(output, sort_keys=True, indent=2, ensure_ascii=False))
+
+        f.write(data)
+        f.close()
+
+        return HttpResponse("ocr complete!")
 
 
