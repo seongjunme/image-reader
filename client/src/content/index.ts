@@ -2,6 +2,10 @@ import axios from 'axios'
 
 const setup = () => {
   addOnClickBodyToWindow();
+
+  speechSynthesis.onvoiceschanged = () => {
+    window.voices = window.speechSynthesis.getVoices();
+  };
 };
 
 const addOnClickBodyToWindow = () => {
@@ -11,13 +15,11 @@ const addOnClickBodyToWindow = () => {
       e.stopPropagation();
 
       const targetElement = e.target as HTMLImageElement;
-      console.log('Is targetElement Image? ' + targetElement.tagName === 'IMG');
+      console.log('Is targetElement Image? ' + (targetElement.tagName === 'IMG'));
       if (targetElement.tagName === 'IMG') {
         console.log(targetElement.currentSrc);
-        const { top, left, width, height } = targetElement.getBoundingClientRect();
-        resizeCanvas({ top, left, width, height });
-        drawRectCanvas();
-
+        selectImage(targetElement); 
+        
         const formData = new FormData()
         formData.append('imageSrc', targetElement.currentSrc)
         const res = await axios({
@@ -29,12 +31,40 @@ const addOnClickBodyToWindow = () => {
           },
         })
         console.log(res)
-
-      } else {
-        clearCanvas();
+        speech('마이크 테스트 check one two 삼');
       }
     };
   }
+};
+
+const selectImage = (targetElement: HTMLImageElement) => {
+  const { top, left, width, height } = targetElement.getBoundingClientRect();
+  resizeCanvas({ top, left, width, height });
+  drawRectCanvas();
+  createOverlay();
+};
+
+const createOverlay = () => {
+  const $overlay = document.createElement('div');
+  $overlay.id = 'my-overlay';
+  $overlay.style.position = 'absolute';
+  $overlay.style.top = '0';
+  $overlay.style.left = '0';
+  $overlay.style.width = `${document.documentElement.scrollWidth}px`;
+  $overlay.style.height = `${document.documentElement.scrollHeight}px`;
+  $overlay.style.zIndex = '999998';
+  $overlay.style.backgroundColor = 'rgba(0,0,0,0.2)';
+  $overlay.addEventListener('click', cancelSpeech);
+
+  const $body = document.querySelector('body');
+  if ($body) $body.appendChild($overlay);
+};
+
+const removeOverlay = () => {
+  const $overlay = document.querySelector('#my-overlay');
+  const $body = document.querySelector('body');
+  if (!$overlay || !$body) return;
+  $body.removeChild($overlay);
 };
 
 const createCanvas = () => {
@@ -86,8 +116,8 @@ const drawRectCanvas = () => {
 
   context.beginPath();
   context.rect(0, 0, $canvas.width, $canvas.height);
-  context.lineWidth = 5;
-  context.strokeStyle = 'rgb(255, 255, 0)';
+  context.lineWidth = 10;
+  context.strokeStyle = '#D55E00';
   context.stroke();
   context.closePath();
 };
@@ -106,6 +136,20 @@ const toggleEventOnBody = () => {
       removeCanvas();
     }
   });
+};
+
+const speech = (text: string) => {
+  const utterance = new SpeechSynthesisUtterance(text);
+  const voice = window.voices.find((voice) => voice.default) ?? null;
+  utterance.voice = voice;
+  utterance.onend = cancelSpeech;
+  window.speechSynthesis.speak(utterance);
+};
+
+const cancelSpeech = () => {
+  window.speechSynthesis.cancel();
+  clearCanvas();
+  removeOverlay();
 };
 
 setup();
