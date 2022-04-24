@@ -1,3 +1,5 @@
+import axios from 'axios'
+
 const setup = () => {
   addOnClickBodyToWindow();
 
@@ -8,7 +10,7 @@ const setup = () => {
 
 const addOnClickBodyToWindow = () => {
   if (!window.onClickBody) {
-    window.onClickBody = (e: MouseEvent) => {
+    window.onClickBody = async (e: MouseEvent) => {
       e.preventDefault();
       e.stopPropagation();
 
@@ -16,9 +18,19 @@ const addOnClickBodyToWindow = () => {
       console.log('Is targetElement Image? ' + (targetElement.tagName === 'IMG'));
       if (targetElement.tagName === 'IMG') {
         console.log(targetElement.currentSrc);
-        selectImage(targetElement);
-
-        // 데이터 post
+        selectImage(targetElement); 
+        
+        const formData = new FormData()
+        formData.append('imageSrc', targetElement.currentSrc)
+        const res = await axios({
+          method: 'post',
+          url: 'http://localhost:8000/ocr/',
+          data: formData,
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        })
+        console.log(res)
         speech('마이크 테스트 check one two 삼');
       }
     };

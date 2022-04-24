@@ -1,72 +1,42 @@
-import json
+"""Detects text in the file."""
+from google.cloud import vision
+import io
+import os
 
-import cv2
-import requests
-import sys
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = './ocr-extention-348215-4c324cd8a017.json'
 
-LIMIT_PX = 1024
-LIMIT_BYTE = 1024*1024  # 1MB
-LIMIT_BOX = 40
+client = vision.ImageAnnotatorClient()
+#path = './egg.jpg'
 
+#with io.open(path, 'rb') as image_file:
+#    content = image_file.read()
 
-def kakao_ocr_resize(image_path: str):
-    """
-    ocr detect/recognize api helper
-    ocr api의 제약사항이 넘어서는 이미지는 요청 이전에 전처리가 필요.
+#image = vision.Image(content=content)
 
-    pixel 제약사항 초과: resize
-    용량 제약사항 초과  : 다른 포맷으로 압축, 이미지 분할 등의 처리 필요. (예제에서 제공하지 않음)
+image = vision.Image()
+image.source.image_uri = 'https://thumbnail8.coupangcdn.com/thumbnails/remote/q89/image/retail/images/1996258203241482-21a25e46-fa45-4c9a-8a75-3d413394c6b5.jpg'
 
-    :param image_path: 이미지파일 경로
-    :return:
-    """
-    image = cv2.imread(image_path)
-    height, width, _ = image.shape
+price_candidate = []
+card_number_candidate = []
+date_candidate = []
 
-    if LIMIT_PX < height or LIMIT_PX < width:
-        ratio = float(LIMIT_PX) / max(height, width)
-        image = cv2.resize(image, None, fx=ratio, fy=ratio)
-        height, width, _ = height, width, _ = image.shape
+response = client.text_detection(image=image)
+texts = response.text_annotations
+print('Texts:')
 
-        # api 사용전에 이미지가 resize된 경우, recognize시 resize된 결과를 사용해야함.
-        image_path = "{}_resized.jpg".format(image_path)
-        cv2.imwrite(image_path, image)
+str =''
+for text in texts:
+    content = text.description
+    content = content.replace(',','')
+    content = content.replace('/', '')
+    content = content.replace('\n', '')
+    str = str + content
+    str = str + ' '
 
-        return image_path
-    return None
+print(str)
 
-
-def kakao_ocr(image_path: str, appkey: str):
-    """
-    OCR api request example
-    :param image_path: 이미지파일 경로
-    :param appkey: 카카오 앱 REST API 키
-    """
-    API_URL = 'https://dapi.kakao.com/v2/vision/text/ocr'
-
-    headers = {'Authorization': 'KakaoAK {}'.format(appkey)}
-
-    image = cv2.imread(image_path)
-    jpeg_image = cv2.imencode(".jpg", image)[1]
-    data = jpeg_image.tobytes()
-
-
-    return requests.post(API_URL, headers=headers, files={"image": data})
-
-
-def main():
-    if len(sys.argv) != 3:
-        print("Please run with args: $ python example.py /path/to/image appkey")
-    image_path, appkey = './test.png','b77911913bc47a764fa0f35202bd0a66'
-
-    resize_impath = kakao_ocr_resize(image_path)
-    if resize_impath is not None:
-        image_path = resize_impath
-        print("원본 대신 리사이즈된 이미지를 사용합니다.")
-
-    output = kakao_ocr(image_path, appkey).json()
-    print("[OCR] output:\n{}\n".format(json.dumps(output, sort_keys=True, indent=2, ensure_ascii=False)))
-
-
-if __name__ == "__main__":
-    main()
+if response.error.message:
+    raise Exception(
+        '{}\nFor more info on error messages, check: '
+        'https://cloud.google.com/apis/design/errors'.format(
+            response.error.message))
