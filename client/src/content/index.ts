@@ -24,14 +24,14 @@ const addOnClickBodyToWindow = () => {
         formData.append('imageSrc', targetElement.currentSrc)
         const res = await axios({
           method: 'post',
-          url: 'http://localhost:8000/ocr/',
+          url: 'http://localhost:8000/google_ocr/',
           data: formData,
           headers: {
             'Content-Type': 'multipart/form-data',
           },
         })
-        console.log(res)
-        speech('마이크 테스트 check one two 삼');
+        const { data: { MESSAGE } } = res
+        speech(MESSAGE);
       }
     };
   }

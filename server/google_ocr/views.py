@@ -1,4 +1,6 @@
 from django.http import HttpResponse
+from django.http import JsonResponse
+import json
 from google.cloud import vision
 import io
 import os
@@ -51,4 +53,8 @@ def index(request):
                 'https://cloud.google.com/apis/design/errors'.format(
                     response.error.message))
 
-        return HttpResponse("hi google_ocr!")
+        print("success")
+
+        return JsonResponse({'MESSAGE': str}, status=201)
+        #return HttpResponse("hi google_ocr!")
+
