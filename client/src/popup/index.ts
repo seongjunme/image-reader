@@ -1,43 +1,66 @@
 import './style.scss';
 
 class Popup {
-  $systemRunButton: Element | null;
-  constructor() {
-    this.$systemRunButton = document.querySelector('.switch');
-    if (!this.$systemRunButton) return;
+  $clickModeButton: Element | null;
+  $dragModeButton: Element | null;
 
-    this.renderButton();
+  constructor() {
+    this.$clickModeButton = document.querySelector('.clickMode');
+    this.$dragModeButton = document.querySelector('.dragMode');
+    if (!this.$clickModeButton || !this.$dragModeButton) return;
+
+    this.renderButtons();
     this.bindEvent();
   }
 
   bindEvent() {
-    this.$systemRunButton?.addEventListener('click', () => {
-      if (!this.$systemRunButton) return;
-      this.toggleRunStatus();
+    this.$clickModeButton?.addEventListener('click', () => {
+      if (!this.$clickModeButton) return;
+      this.toggleClickMode();
+      this.runContentScript();
+    });
+
+    this.$dragModeButton?.addEventListener('click', () => {
+      this.toggleDragMode();
       this.runContentScript();
     });
   }
 
-  renderButton() {
-    chrome.storage.sync.get(({ isSystemRun }) => {
-      if (!this.$systemRunButton) return;
+  renderButtons() {
+    chrome.storage.sync.get(({ clickMode, dragMode }) => {
+      if (!this.$clickModeButton || !this.$dragModeButton) return;
 
-      if (isSystemRun) {
-        this.$systemRunButton.className = 'switch on';
-        const $span = this.$systemRunButton.querySelector('span');
-        if ($span) $span.textContent = 'On';
+      if (clickMode) {
+        this.$clickModeButton.className = 'clickMode switch on';
       } else {
-        this.$systemRunButton.className = 'switch off';
-        const $span = this.$systemRunButton.querySelector('span');
-        if ($span) $span.textContent = 'Off';
+        this.$clickModeButton.className = 'clickMode switch off';
+      }
+
+      if (dragMode) {
+        this.$dragModeButton.className = 'dragMode switch on';
+      } else {
+        this.$dragModeButton.className = 'dragMode switch off';
       }
     });
   }
 
-  toggleRunStatus() {
-    chrome.storage.sync.get(async ({ isSystemRun }) => {
-      await chrome.storage.sync.set({ isSystemRun: !isSystemRun });
-      this.renderButton();
+  toggleClickMode() {
+    chrome.storage.sync.get(async ({ clickMode, dragMode }) => {
+      await chrome.storage.sync.set({
+        clickMode: !clickMode,
+        dragMode: dragMode ? false : dragMode,
+      });
+      this.renderButtons();
+    });
+  }
+
+  toggleDragMode() {
+    chrome.storage.sync.get(async ({ clickMode, dragMode }) => {
+      await chrome.storage.sync.set({
+        clickMode: clickMode ? false : clickMode,
+        dragMode: !dragMode,
+      });
+      this.renderButtons();
     });
   }
 

@@ -1,14 +1,6 @@
 import axios from 'axios';
 import debounce from '@utils/debounce';
 
-const setup = () => {
-  addOnClickBodyToWindow();
-
-  speechSynthesis.onvoiceschanged = () => {
-    window.voices = window.speechSynthesis.getVoices();
-  };
-};
-
 const addOnClickBodyToWindow = () => {
   if (!window.onClickBody) {
     window.onClickBody = async (e: MouseEvent) => {
@@ -140,22 +132,6 @@ const drawRectCanvas = () => {
   context.closePath();
 };
 
-const toggleEventOnBody = () => {
-  const $body = document.querySelector('body');
-  if (!$body) return;
-
-  chrome.storage.sync.get(({ isSystemRun }) => {
-    console.log('Is system run? ' + isSystemRun);
-    if (isSystemRun) {
-      $body.addEventListener('click', window.onClickBody);
-      createCanvas();
-    } else {
-      $body.removeEventListener('click', window.onClickBody);
-      removeCanvas();
-    }
-  });
-};
-
 const speech = (text: string) => {
   const utterance = new SpeechSynthesisUtterance(text);
   const voice = window.voices.find((voice) => voice.default) ?? null;
@@ -168,6 +144,35 @@ const cancelSpeech = () => {
   window.speechSynthesis.cancel();
   clearCanvas();
   removeOverlay();
+};
+
+const setup = () => {
+  addOnClickBodyToWindow();
+
+  speechSynthesis.onvoiceschanged = () => {
+    window.voices = window.speechSynthesis.getVoices();
+  };
+};
+
+const toggleEventOnBody = () => {
+  const $body = document.querySelector('body');
+  if (!$body) return;
+
+  chrome.storage.sync.get(({ clickMode, dragMode }) => {
+    console.log('Is Click Mode? ' + clickMode);
+    console.log('Is Drag Mode? ' + dragMode);
+    if (clickMode) {
+      $body.addEventListener('click', window.onClickBody);
+      createCanvas();
+    } else {
+      $body.removeEventListener('click', window.onClickBody);
+      removeCanvas();
+    }
+
+    if (dragMode) {
+    } else {
+    }
+  });
 };
 
 setup();
