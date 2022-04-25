@@ -1,4 +1,5 @@
-import axios from 'axios'
+import axios from 'axios';
+import debounce from '@utils/debounce';
 
 const setup = () => {
   addOnClickBodyToWindow();
@@ -18,30 +19,45 @@ const addOnClickBodyToWindow = () => {
       console.log('Is targetElement Image? ' + (targetElement.tagName === 'IMG'));
       if (targetElement.tagName === 'IMG') {
         console.log(targetElement.currentSrc);
-        selectImage(targetElement); 
-        
-        const formData = new FormData()
-        formData.append('imageSrc', targetElement.currentSrc)
-        const res = await axios({
-          method: 'post',
-          url: 'http://localhost:8000/google_ocr/',
-          data: formData,
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        })
-        const { data: { MESSAGE } } = res
-        speech(MESSAGE);
+        selectImage(targetElement);
+
+        const formData = new FormData();
+        formData.append('imageSrc', targetElement.currentSrc);
+
+        try {
+          const res = await axios({
+            method: 'post',
+            url: 'http://localhost:8000/google_ocr/',
+            data: formData,
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          });
+          const {
+            data: { MESSAGE },
+          } = res;
+          speech(MESSAGE);
+        } catch (e) {
+          console.log(e);
+        }
       }
     };
   }
 };
 
 const selectImage = (targetElement: HTMLImageElement) => {
-  const { top, left, width, height } = targetElement.getBoundingClientRect();
-  resizeCanvas({ top, left, width, height });
-  drawRectCanvas();
-  createOverlay();
+  const draw = () => {
+    const { top, left, width, height } = targetElement.getBoundingClientRect();
+    resizeCanvas({ top, left, width, height });
+    drawRectCanvas();
+    removeOverlay();
+    createOverlay();
+  };
+
+  window.draw = debounce(draw, 100);
+  window.addEventListener('scroll', window.draw);
+  window.addEventListener('resize', window.draw);
+  draw();
 };
 
 const createOverlay = () => {
@@ -107,6 +123,8 @@ const clearCanvas = () => {
   context.clearRect(0, 0, $canvas.width, $canvas.height);
   $canvas.width = 0;
   $canvas.height = 0;
+  window.removeEventListener('resize', window.draw);
+  window.removeEventListener('scroll', window.draw);
 };
 
 const drawRectCanvas = () => {
