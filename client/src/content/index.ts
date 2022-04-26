@@ -1,58 +1,74 @@
 import axios from 'axios';
+import html2canvas from 'html2canvas';
 import debounce from '@utils/debounce';
 
-const addOnClickBodyToWindow = () => {
-  if (!window.onClickBody) {
-    window.onClickBody = async (e: MouseEvent) => {
-      e.preventDefault();
-      e.stopPropagation();
+const runClickMode = () => {
+  const onClickBody = async (e: MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
 
-      const targetElement = e.target as HTMLImageElement;
-      console.log('Is targetElement Image? ' + (targetElement.tagName === 'IMG'));
-      if (targetElement.tagName === 'IMG') {
-        console.log(targetElement.currentSrc);
-        selectImage(targetElement);
+    const targetElement = e.target as HTMLImageElement;
+    console.log('Is targetElement Image? ' + (targetElement.tagName === 'IMG'));
+    if (targetElement.tagName === 'IMG') {
+      console.log(targetElement.currentSrc);
+      selectImage(targetElement);
 
-        const formData = new FormData();
-        formData.append('imageSrc', targetElement.currentSrc);
+      const formData = new FormData();
+      formData.append('imageSrc', targetElement.currentSrc);
 
-        try {
-          const res = await axios({
-            method: 'post',
-            url: 'http://localhost:8000/google_ocr/',
-            data: formData,
-            headers: {
-              'Content-Type': 'multipart/form-data',
-            },
-          });
-          const {
-            data: { MESSAGE },
-          } = res;
-          speech(MESSAGE);
-        } catch (e) {
-          console.log(e);
-        }
+      try {
+        const res = await axios({
+          method: 'post',
+          url: 'http://localhost:8000/google_ocr/',
+          data: formData,
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+        const {
+          data: { MESSAGE },
+        } = res;
+        speech(MESSAGE);
+      } catch (e) {
+        console.log(e);
       }
-    };
-  }
+    }
+  };
+
+  if (!window.onClickBody) window.onClickBody = onClickBody;
+  const $body = document.querySelector('body');
+  if (!$body) return;
+  $body.addEventListener('click', window.onClickBody);
+};
+
+const exitClickMode = () => {
+  const $body = document.querySelector('body');
+  if (!$body) return;
+  $body.removeEventListener('click', window.onClickBody);
 };
 
 const selectImage = (targetElement: HTMLImageElement) => {
-  const draw = () => {
+  const drawBox = () => {
     const { top, left, width, height } = targetElement.getBoundingClientRect();
-    resizeCanvas({ top, left, width, height });
-    drawRectCanvas();
-    removeOverlay();
-    createOverlay();
+    resizeCanvas({
+      top: document.documentElement.scrollTop + top,
+      left: document.documentElement.scrollLeft + left,
+      width,
+      height,
+    });
+    drawBorderCanvas();
+    const $overlay = createOverlay();
+    $overlay.addEventListener('click', cancelSpeech);
   };
 
-  window.draw = debounce(draw, 100);
-  window.addEventListener('scroll', window.draw);
-  window.addEventListener('resize', window.draw);
-  draw();
+  window.drawBox = debounce(drawBox, 100);
+  window.addEventListener('scroll', window.drawBox);
+  window.addEventListener('resize', window.drawBox);
+  drawBox();
 };
 
 const createOverlay = () => {
+  removeOverlay();
   const $overlay = document.createElement('div');
   $overlay.id = 'my-overlay';
   $overlay.style.position = 'absolute';
@@ -60,12 +76,13 @@ const createOverlay = () => {
   $overlay.style.left = '0';
   $overlay.style.width = `${document.documentElement.scrollWidth}px`;
   $overlay.style.height = `${document.documentElement.scrollHeight}px`;
-  $overlay.style.zIndex = '999998';
+  $overlay.style.zIndex = '999999';
   $overlay.style.backgroundColor = 'rgba(0,0,0,0.2)';
-  $overlay.addEventListener('click', cancelSpeech);
 
   const $body = document.querySelector('body');
   if ($body) $body.appendChild($overlay);
+
+  return $overlay;
 };
 
 const removeOverlay = () => {
@@ -76,6 +93,7 @@ const removeOverlay = () => {
 };
 
 const createCanvas = () => {
+  removeCanvas();
   const $body = document.querySelector('body');
   const $canvas = document.createElement('canvas');
   $canvas.id = 'imageReader';
@@ -101,25 +119,14 @@ const resizeCanvas = ({
   height: number;
 }) => {
   const $canvas = document.querySelector('#imageReader') as HTMLCanvasElement;
-  $canvas.style.top = `${document.documentElement.scrollTop + top}px`;
-  $canvas.style.left = `${document.documentElement.scrollLeft + left}px`;
+  $canvas.style.top = `${top}px`;
+  $canvas.style.left = `${left}px`;
   $canvas.style.zIndex = '999999';
   $canvas.width = width;
   $canvas.height = height;
 };
 
-const clearCanvas = () => {
-  const $canvas = document.querySelector('#imageReader') as HTMLCanvasElement;
-  const context = $canvas.getContext('2d');
-  if (!context) return;
-  context.clearRect(0, 0, $canvas.width, $canvas.height);
-  $canvas.width = 0;
-  $canvas.height = 0;
-  window.removeEventListener('resize', window.draw);
-  window.removeEventListener('scroll', window.draw);
-};
-
-const drawRectCanvas = () => {
+const drawBorderCanvas = () => {
   const $canvas = document.querySelector('#imageReader') as HTMLCanvasElement;
   const context = $canvas.getContext('2d');
   if (!context) return;
@@ -132,6 +139,166 @@ const drawRectCanvas = () => {
   context.closePath();
 };
 
+const clearBorderCanvas = () => {
+  const $canvas = document.querySelector('#imageReader') as HTMLCanvasElement;
+  const context = $canvas.getContext('2d');
+  if (!context) return;
+  context.clearRect(0, 0, $canvas.width, $canvas.height);
+  $canvas.width = 0;
+  $canvas.height = 0;
+  window.removeEventListener('resize', window.drawBox);
+  window.removeEventListener('scroll', window.drawBox);
+  removeOverlay();
+};
+
+const drawRecCanvas = ({
+  x,
+  y,
+  w,
+  h,
+}: {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}) => {
+  const $canvas = document.querySelector('#imageReader') as HTMLCanvasElement;
+  const context = $canvas.getContext('2d');
+  if (!context) return;
+
+  context.beginPath();
+  context.rect(x, y, w, h);
+  context.lineWidth = 5;
+  context.strokeStyle = '#D55E00';
+  context.stroke();
+  context.closePath();
+};
+
+const clearCanvas = () => {
+  const $canvas = document.querySelector('#imageReader') as HTMLCanvasElement;
+  const context = $canvas.getContext('2d');
+  if (!context) return;
+  context.clearRect(0, 0, $canvas.width, $canvas.height);
+};
+
+const calculateBox = ({
+  startX,
+  startY,
+  endX,
+  endY,
+}: {
+  startX: number;
+  startY: number;
+  endX: number;
+  endY: number;
+}) => {
+  const width = Math.abs(startX - endX);
+  const height = Math.abs(startY - endY);
+  const realStartX = startX < endX ? startX : endX;
+  const realStartY = startY < endY ? startY : endY;
+
+  return [realStartX, realStartY, width, height];
+};
+
+const runDragMode = () => {
+  let startX = -1,
+    startY = -1,
+    endX = -1,
+    endY = -1,
+    isOnClick = false;
+
+  const $overlay = createOverlay();
+  if (!$overlay) return;
+
+  const initState = () => {
+    startX = startY = endX = endY = -1;
+    isOnClick = false;
+  };
+
+  const mouseMoveEvent = (e: MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!isOnClick) return;
+
+    const { pageX, pageY } = e;
+    endX = pageX;
+    endY = pageY;
+    const [x, y, w, h] = calculateBox({ startX, startY, endX, endY });
+    clearCanvas();
+    drawRecCanvas({ x, y, w, h });
+  };
+
+  $overlay.addEventListener('mousedown', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    resizeCanvas({
+      top: 0,
+      left: 0,
+      width: document.documentElement.scrollWidth,
+      height: document.documentElement.scrollHeight,
+    });
+
+    const { pageX, pageY } = e;
+    startX = pageX;
+    startY = pageY;
+    isOnClick = true;
+    $overlay.addEventListener('mousemove', mouseMoveEvent);
+  });
+
+  $overlay.addEventListener('mouseup', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const { pageX, pageY } = e;
+    endX = pageX;
+    endY = pageY;
+
+    const [x, y, w, h] = calculateBox({ startX, startY, endX, endY });
+    initState();
+    if (x <= 0 || y <= 0 || w <= 0 || h <= 0) return;
+
+    html2canvas(document.body).then((canvas) => {
+      const crop = canvas.getContext('2d')?.getImageData(x, y, w, h);
+      if (!crop) return;
+
+      const cvs = document.createElement('canvas');
+      cvs.width = w;
+      cvs.height = h;
+      cvs.getContext('2d')?.putImageData(crop, 0, 0);
+      save(cvs);
+    });
+
+    $overlay.removeEventListener('mousemove', mouseMoveEvent);
+    clearCanvas();
+  });
+
+  const resizeDragMode = () => {
+    const width = document.documentElement.scrollWidth;
+    const height = document.documentElement.scrollHeight;
+    $overlay.style.width = `${width}px`;
+    $overlay.style.height = `${height}px`;
+    resizeCanvas({ top: 0, left: 0, width, height });
+  };
+
+  if (!window.resizeDragMode) window.resizeDragMode = debounce(resizeDragMode, 100);
+  window.addEventListener('resize', window.resizeDragMode);
+  window.addEventListener('scroll', window.resizeDragMode);
+};
+
+function save(canvas: HTMLCanvasElement) {
+  const el = document.createElement('a');
+  el.href = canvas.toDataURL('image/jpeg');
+  el.download = '파일명.jpg';
+  el.click();
+}
+
+const exitDragMode = () => {
+  removeOverlay();
+  resizeCanvas({ top: 0, left: 0, width: 0, height: 0 });
+  window.removeEventListener('resize', window.resizeDragMode);
+  window.removeEventListener('scroll', window.resizeDragMode);
+};
+
 const speech = (text: string) => {
   const utterance = new SpeechSynthesisUtterance(text);
   const voice = window.voices.find((voice) => voice.default) ?? null;
@@ -142,38 +309,29 @@ const speech = (text: string) => {
 
 const cancelSpeech = () => {
   window.speechSynthesis.cancel();
-  clearCanvas();
-  removeOverlay();
+  clearBorderCanvas();
 };
 
-const setup = () => {
-  addOnClickBodyToWindow();
-
+const setupSpeechVoice = () => {
   speechSynthesis.onvoiceschanged = () => {
     window.voices = window.speechSynthesis.getVoices();
   };
 };
 
-const toggleEventOnBody = () => {
-  const $body = document.querySelector('body');
-  if (!$body) return;
+const setup = () => {
+  setupSpeechVoice();
+  createCanvas();
+};
 
+const bindEvent = () => {
   chrome.storage.sync.get(({ clickMode, dragMode }) => {
     console.log('Is Click Mode? ' + clickMode);
     console.log('Is Drag Mode? ' + dragMode);
-    if (clickMode) {
-      $body.addEventListener('click', window.onClickBody);
-      createCanvas();
-    } else {
-      $body.removeEventListener('click', window.onClickBody);
-      removeCanvas();
-    }
 
-    if (dragMode) {
-    } else {
-    }
+    clickMode ? runClickMode() : exitClickMode();
+    dragMode ? runDragMode() : exitDragMode();
   });
 };
 
 setup();
-toggleEventOnBody();
+bindEvent();
