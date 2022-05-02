@@ -1,5 +1,12 @@
 chrome.runtime.onInstalled.addListener(() => {
   chrome.storage.sync.set({
-    isSystemRun: false,
+    isClickMode: false,
+    isDragMode: false,
+  });
+});
+
+chrome.runtime.onConnect.addListener((port) => {
+  chrome.tabs.captureVisibleTab((dataUrl) => {
+    port.postMessage({ dataUrl });
   });
 });
