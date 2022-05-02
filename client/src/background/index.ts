@@ -4,3 +4,15 @@ chrome.runtime.onInstalled.addListener(() => {
     dragMode: false,
   });
 });
+
+// chrome.runtime.onMessage.addListener((req, sender, res) => {
+//   chrome.tabs.captureVisibleTab((dataUrl) => {
+//     res({ dataUrl });
+//   });
+// });
+
+chrome.runtime.onConnect.addListener((port) => {
+  chrome.tabs.captureVisibleTab((dataUrl) => {
+    port.postMessage({ dataUrl });
+  });
+});

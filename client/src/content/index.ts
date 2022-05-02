@@ -1,5 +1,4 @@
 import axios from 'axios';
-import html2canvas from 'html2canvas';
 import debounce from '@utils/debounce';
 
 const runClickMode = () => {
@@ -39,6 +38,7 @@ const runClickMode = () => {
   const $body = document.querySelector('body');
   if (!$body) return;
   $body.addEventListener('click', window.onClickBody);
+  createCanvas({ type: 'CLICK_MODE' });
 };
 
 const exitClickMode = () => {
@@ -92,12 +92,15 @@ const removeOverlay = () => {
   $body.removeChild($overlay);
 };
 
-const createCanvas = () => {
+const createCanvas = ({ type }: { type: string }) => {
   removeCanvas();
   const $body = document.querySelector('body');
   const $canvas = document.createElement('canvas');
   $canvas.id = 'imageReader';
-  $canvas.style.position = 'absolute';
+
+  if (type === 'CLICK_MODE') $canvas.style.position = 'absolute';
+  if (type === 'DRAG_MODE') $canvas.style.position = 'fixed';
+
   $body?.insertAdjacentElement('afterbegin', $canvas);
 };
 
@@ -201,6 +204,8 @@ const calculateBox = ({
 };
 
 const runDragMode = () => {
+  createCanvas({ type: 'DRAG_MODE' });
+
   let startX = -1,
     startY = -1,
     endX = -1,
@@ -220,9 +225,10 @@ const runDragMode = () => {
     e.stopPropagation();
     if (!isOnClick) return;
 
-    const { pageX, pageY } = e;
-    endX = pageX;
-    endY = pageY;
+    const { clientX, clientY } = e;
+    endX = clientX;
+    endY = clientY;
+
     const [x, y, w, h] = calculateBox({ startX, startY, endX, endY });
     clearCanvas();
     drawRecCanvas({ x, y, w, h });
@@ -239,9 +245,9 @@ const runDragMode = () => {
       height: document.documentElement.scrollHeight,
     });
 
-    const { pageX, pageY } = e;
-    startX = pageX;
-    startY = pageY;
+    const { clientX, clientY } = e;
+    startX = clientX;
+    startY = clientY;
     isOnClick = true;
     $overlay.addEventListener('mousemove', mouseMoveEvent);
   });
@@ -249,23 +255,30 @@ const runDragMode = () => {
   $overlay.addEventListener('mouseup', (e) => {
     e.preventDefault();
     e.stopPropagation();
-    const { pageX, pageY } = e;
-    endX = pageX;
-    endY = pageY;
+    // const { pageX, pageY } = e;
+    const { clientX, clientY } = e;
+    // endX = pageX;
+    // endY = pageY;
+    endX = clientX;
+    endY = clientY;
 
     const [x, y, w, h] = calculateBox({ startX, startY, endX, endY });
     initState();
     if (x <= 0 || y <= 0 || w <= 0 || h <= 0) return;
 
-    html2canvas(document.body).then((canvas) => {
-      const crop = canvas.getContext('2d')?.getImageData(x, y, w, h);
-      if (!crop) return;
-
-      const cvs = document.createElement('canvas');
-      cvs.width = w;
-      cvs.height = h;
-      cvs.getContext('2d')?.putImageData(crop, 0, 0);
-      save(cvs);
+    const port = chrome.runtime.connect({ name: 'port-capture' });
+    port.postMessage({ msg: 'capture' });
+    port.onMessage.addListener(({ dataUrl }) => {
+      const img = new Image();
+      img.addEventListener('load', () => {
+        const cvs = document.createElement('canvas');
+        cvs.width = w;
+        cvs.height = h;
+        cvs.getContext('2d')?.drawImage(img, x, y, w, h, 0, 0, w, h);
+        save(cvs);
+      });
+      img.src = dataUrl;
+      port.disconnect();
     });
 
     $overlay.removeEventListener('mousemove', mouseMoveEvent);
@@ -277,7 +290,6 @@ const runDragMode = () => {
     const height = document.documentElement.scrollHeight;
     $overlay.style.width = `${width}px`;
     $overlay.style.height = `${height}px`;
-    resizeCanvas({ top: 0, left: 0, width, height });
   };
 
   if (!window.resizeDragMode) window.resizeDragMode = debounce(resizeDragMode, 100);
@@ -294,9 +306,9 @@ function save(canvas: HTMLCanvasElement) {
 
 const exitDragMode = () => {
   removeOverlay();
-  resizeCanvas({ top: 0, left: 0, width: 0, height: 0 });
+  // resizeCanvas({ top: 0, left: 0, width: 0, height: 0 });
   window.removeEventListener('resize', window.resizeDragMode);
-  window.removeEventListener('scroll', window.resizeDragMode);
+  // window.removeEventListener('scroll', window.resizeDragMode);
 };
 
 const speech = (text: string) => {
@@ -320,7 +332,6 @@ const setupSpeechVoice = () => {
 
 const setup = () => {
   setupSpeechVoice();
-  createCanvas();
 };
 
 const bindEvent = () => {
