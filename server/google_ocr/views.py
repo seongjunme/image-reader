@@ -24,7 +24,7 @@ def index(request):
         # image = vision.Image(content=content)
 
         image = vision.Image()
-        #image.source.image_uri = 'https://thumbnail8.coupangcdn.com/thumbnails/remote/q89/image/retail/images/1996258203241482-21a25e46-fa45-4c9a-8a75-3d413394c6b5.jpg'
+        #image.source.image_uri = 'https://thumbnail8.coupangcdn.com/thumbnails/remote/q89/image/retail/images/1199319973444746-8372cd7e-ead6-4f1c-aa18-a83d8b7f60f0.jpg'
         image.source.image_uri = image_path
 
 
@@ -36,16 +36,13 @@ def index(request):
         texts = response.text_annotations
         print('Texts:')
 
-        str = ''
-        for text in texts:
-            content = text.description
-            content = content.replace(',', '')
-            content = content.replace('/', '')
-            content = content.replace('\n', '')
-            str = str + content
-            str = str + ' '
+        content = texts[0].description
+        content = content.replace(',', ' ')
+        content = content.replace('/', ' ')
+        content = content.replace('\n', ' ')
 
-        print(str)
+        print(content)
+
 
         if response.error.message:
             raise Exception(
@@ -55,6 +52,6 @@ def index(request):
 
         print("success")
 
-        return JsonResponse({'MESSAGE': str}, status=201)
+        return JsonResponse({'MESSAGE': content}, status=201)
         #return HttpResponse("hi google_ocr!")
 
