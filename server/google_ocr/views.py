@@ -50,7 +50,7 @@ def index(request):
                 'https://cloud.google.com/apis/design/errors'.format(
                     response.error.message))
 
-        print("success")
+        print("check feature branch")
 
         return JsonResponse({'MESSAGE': content}, status=201)
         #return HttpResponse("hi google_ocr!")
