@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { calculateBox } from '@utils/calculate';
 import debounce from '@utils/debounce';
 import {
@@ -7,6 +8,7 @@ import {
   resizeCanvas,
 } from './canvas';
 import { createOverlay, removeOverlay } from './overlay';
+import { speech } from './speech';
 
 const DragMode = () => {
   let startX = -1,
@@ -64,12 +66,33 @@ const DragMode = () => {
     port.postMessage({ msg: 'capture' });
     port.onMessage.addListener(({ dataUrl }) => {
       const img = new Image();
-      img.addEventListener('load', () => {
+      img.addEventListener('load', async () => {
         const cvs = document.createElement('canvas');
         cvs.width = w;
         cvs.height = h;
         cvs.getContext('2d')?.drawImage(img, x, y, w, h, 0, 0, w, h);
+        const src = cvs.toDataURL('image/jpeg');
         save(cvs);
+
+        const formData = new FormData();
+        formData.append('imageSrc', src);
+
+        try {
+          const res = await axios({
+            method: 'post',
+            url: 'http://localhost:8000/google_ocr/',
+            data: formData,
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          });
+          const {
+            data: { MESSAGE },
+          } = res;
+          speech(MESSAGE);
+        } catch (e) {
+          console.log(e);
+        }
       });
       img.src = dataUrl;
       port.disconnect();
