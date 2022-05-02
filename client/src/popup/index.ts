@@ -27,16 +27,16 @@ class Popup {
   }
 
   renderButtons() {
-    chrome.storage.sync.get(({ clickMode, dragMode }) => {
+    chrome.storage.sync.get(({ isClickMode, isDragMode }) => {
       if (!this.$clickModeButton || !this.$dragModeButton) return;
 
-      if (clickMode) {
+      if (isClickMode) {
         this.$clickModeButton.className = 'clickMode switch on';
       } else {
         this.$clickModeButton.className = 'clickMode switch off';
       }
 
-      if (dragMode) {
+      if (isDragMode) {
         this.$dragModeButton.className = 'dragMode switch on';
       } else {
         this.$dragModeButton.className = 'dragMode switch off';
@@ -45,20 +45,20 @@ class Popup {
   }
 
   toggleClickMode() {
-    chrome.storage.sync.get(async ({ clickMode, dragMode }) => {
+    chrome.storage.sync.get(async ({ isClickMode, isDragMode }) => {
       await chrome.storage.sync.set({
-        clickMode: !clickMode,
-        dragMode: dragMode ? false : dragMode,
+        isClickMode: !isClickMode,
+        isDragMode: isDragMode ? false : isDragMode,
       });
       this.renderButtons();
     });
   }
 
   toggleDragMode() {
-    chrome.storage.sync.get(async ({ clickMode, dragMode }) => {
+    chrome.storage.sync.get(async ({ isClickMode, isDragMode }) => {
       await chrome.storage.sync.set({
-        clickMode: clickMode ? false : clickMode,
-        dragMode: !dragMode,
+        isClickMode: isClickMode ? false : isClickMode,
+        isDragMode: !isDragMode,
       });
       this.renderButtons();
     });
@@ -77,5 +77,5 @@ class Popup {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
-  const popup = new Popup();
+  new Popup();
 });
