@@ -67,14 +67,23 @@ const DragMode = () => {
     port.postMessage({ msg: 'capture' });
     port.onMessage.addListener(({ dataUrl }) => {
       const img = new Image();
+      img.src = dataUrl;
       img.addEventListener('load', async () => {
+        const ratioW = img.width / window.innerWidth;
+        const ratioH = img.height / window.innerHeight;
+
+        const X = x * ratioW;
+        const Y = y * ratioH;
+        const W = w * ratioW;
+        const H = h * ratioH;
+
         const cvs = document.createElement('canvas');
-        cvs.width = w;
-        cvs.height = h;
-        cvs.getContext('2d')?.drawImage(img, x, y, w, h, 0, 0, w, h);
-        const src = cvs.toDataURL('image/jpeg');
+        cvs.width = W;
+        cvs.height = H;
+        cvs.getContext('2d')?.drawImage(img, X, Y, W, H, 0, 0, W, H);
         save(cvs);
 
+        const src = cvs.toDataURL('image/jpeg');
         const formData = new FormData();
         formData.append('imageSrc', src);
 
@@ -95,7 +104,6 @@ const DragMode = () => {
           console.log(e);
         }
       });
-      img.src = dataUrl;
       port.disconnect();
     });
 
