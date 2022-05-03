@@ -5,6 +5,7 @@ import {
   clearCanvas,
   createCanvas,
   drawCaptureBoxCanvas,
+  removeCanvas,
   resizeCanvas,
 } from './canvas';
 import { createOverlay, removeOverlay } from './overlay';
@@ -119,6 +120,7 @@ const DragMode = () => {
 
   const exit = () => {
     removeOverlay();
+    removeCanvas({ className: '.dragMode' });
     window.removeEventListener('resize', window.resizeDragMode);
   };
 
