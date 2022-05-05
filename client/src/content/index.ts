@@ -1,6 +1,6 @@
 import ClickMode from './ClickMode';
 import DragMode from './DragMode';
-import { setupSpeechVoice } from './speech';
+import { setupSpeechVoice } from '../utils/speech';
 
 (() => {
   setupSpeechVoice();

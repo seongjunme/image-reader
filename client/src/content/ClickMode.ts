@@ -8,7 +8,7 @@ import {
   resizeCanvas,
 } from './canvas';
 import { createOverlay, removeOverlay } from './overlay';
-import { cancelSpeech, speech } from './speech';
+import { cancelSpeech, speech } from '../utils/speech';
 
 const ClickMode = () => {
   const onClickBody = async (e: MouseEvent) => {
