@@ -1,6 +1,12 @@
 import debounce from '@utils/debounce';
 import axios from 'axios';
-import { clearRecCanvas, createCanvas, drawRecCanvas, resizeCanvas } from './canvas';
+import {
+  clearRecCanvas,
+  createCanvas,
+  drawRecCanvas,
+  removeCanvas,
+  resizeCanvas,
+} from './canvas';
 import { createOverlay, removeOverlay } from './overlay';
 import { cancelSpeech, speech } from './speech';
 
@@ -65,6 +71,7 @@ const ClickMode = () => {
     const $body = document.querySelector('body');
     if (!$body) return;
     $body.removeEventListener('click', window.onClickBody);
+    removeCanvas({ className: '.clickMode' });
   };
 
   const run = () => {

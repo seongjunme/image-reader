@@ -1,13 +1,18 @@
 export const createCanvas = ({ type }: { type: string }) => {
-  removeCanvas();
   const $body = document.querySelector('body');
   const $canvas = document.createElement('canvas');
   $canvas.id = 'imageReader';
   $canvas.style.zIndex = '999999';
 
-  if (type === 'CLICK_MODE') $canvas.style.position = 'absolute';
+  if (type === 'CLICK_MODE') {
+    removeCanvas({ className: '.clickMode' });
+    $canvas.className = 'clickMode';
+    $canvas.style.position = 'absolute';
+  }
 
   if (type === 'DRAG_MODE') {
+    removeCanvas({ className: '.dragMode' });
+    $canvas.className = 'dragMode';
     $canvas.style.position = 'fixed';
     $canvas.style.top = '0';
     $canvas.style.left = '0';
@@ -60,9 +65,9 @@ export const clearRecCanvas = () => {
   window.removeEventListener('scroll', window.drawBox);
 };
 
-export const removeCanvas = () => {
+export const removeCanvas = ({ className }: { className: string }) => {
   const $body = document.querySelector('body');
-  const $canvas = document.querySelector('#imageReader');
+  const $canvas = document.querySelector(className);
   if ($canvas) $body?.removeChild($canvas);
 };
 
