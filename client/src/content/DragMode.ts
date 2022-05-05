@@ -9,7 +9,7 @@ import {
   resizeCanvas,
 } from './canvas';
 import { createOverlay, removeOverlay } from './overlay';
-import { speech } from './speech';
+import { speech } from '../utils/speech';
 
 const DragMode = () => {
   let startX = -1,

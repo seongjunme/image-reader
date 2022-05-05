@@ -1,4 +1,5 @@
 import './style.scss';
+import { setupSpeechVoice, speech, cancelSpeech } from '../utils/speech';
 
 class Popup {
   $clickModeButton: Element | null;
@@ -11,6 +12,7 @@ class Popup {
 
     this.renderButtons();
     this.bindEvent();
+    setupSpeechVoice();
   }
 
   bindEvent() {
@@ -51,6 +53,10 @@ class Popup {
         isDragMode: isDragMode ? false : isDragMode,
       });
       this.renderButtons();
+      cancelSpeech();
+      isClickMode
+        ? speech('클릭 모드 해제', false)
+        : speech('클릭 모드 시 작', false);
     });
   }
 
@@ -61,6 +67,10 @@ class Popup {
         isDragMode: !isDragMode,
       });
       this.renderButtons();
+      cancelSpeech();
+      isDragMode
+        ? speech('드래그 모드 해제', false)
+        : speech('드래그 모드 시 작', false);
     });
   }
 

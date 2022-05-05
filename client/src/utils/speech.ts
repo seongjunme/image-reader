@@ -8,10 +8,10 @@ export const cancelSpeech = () => {
   window.speechSynthesis.cancel();
 };
 
-export const speech = (text: string) => {
+export const speech = (text: string, once = true) => {
   const utterance = new SpeechSynthesisUtterance(text);
   const voice = window.voices.find((voice) => voice.default) ?? null;
   utterance.voice = voice;
-  utterance.onend = cancelSpeech;
+  if (once) utterance.onend = cancelSpeech;
   window.speechSynthesis.speak(utterance);
 };
