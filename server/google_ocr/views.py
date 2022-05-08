@@ -13,31 +13,45 @@ def index(request):
         return HttpResponse("method is get")
 
     elif request.method == 'POST':
-        #image_path = request.POST['imageSrc']
+        print(request.POST)
+        dataType = request.POST['type']
+        print(dataType)
+        image = vision.Image()
 
-        myFile = request.FILES.get("filename", None)
-        if myFile:
-            BASE_DIR = os.path.dirname(os.path.realpath(__file__))
-            dir = os.path.join(BASE_DIR, myFile.name)
-            destination = open(os.path.join(dir, myFile.name), 'wb+')
-            for chunk in myFile.chunks():
-                destination.write(chunk)
-            destination.close()
+        if(dataType == 'url'):
+            image_path = request.POST['imageSrc']
+            image.source.image_uri = image_path
+
+        elif(dataType == 'file'):
+            print(request.FILES['imageSrc'])
+            myFile = request.FILES.get("imageSrc", None)
+            if myFile:
+                BASE_DIR = os.path.dirname(os.path.realpath(__file__))
+                dir = os.path.join(BASE_DIR, myFile.name)
+                dir = dir.replace('\\', '//')
+
+                with open(dir+'.jpg', 'wb+') as destination:
+                    for chunk in myFile.chunks():
+                        destination.write(chunk)
+                    destination.close()
+                # destination = open(dir+'.jpg', 'wb+')
+                # for chunk in myFile.chunks():
+                #     destination.write(chunk)
+                # destination.close()
+                print('-------')
+                print(destination)
+
+                with io.open(dir + '.jpg', 'rb') as image_file:
+                    content = image_file.read()
+                image = vision.Image(content=content)
+
+        #path = './egg.jpg'
+        # image.source.image_uri = 'https://thumbnail8.coupangcdn.com/thumbnails/remote/q89/image/retail/images/1199319973444746-8372cd7e-ead6-4f1c-aa18-a83d8b7f60f0.jpg'
 
         client = vision.ImageAnnotatorClient()
-        #path = './egg.jpg'
-        print(destination)
-
-        with io.open(destination, 'rb') as image_file:
-            content = image_file.read()
-
-        image = vision.Image(content=content)
-
-        # image = vision.Image()
-        #image.source.image_uri = 'https://thumbnail8.coupangcdn.com/thumbnails/remote/q89/image/retail/images/1199319973444746-8372cd7e-ead6-4f1c-aa18-a83d8b7f60f0.jpg'
-        #image.source.image_uri = image_path
-
         response = client.text_detection(image=image)
+
+        # 문자열 처리
         texts = response.text_annotations
         print('Texts:')
 
