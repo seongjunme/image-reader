@@ -82,11 +82,15 @@ const DragMode = () => {
         cvs.height = H;
         cvs.getContext('2d')?.drawImage(img, X, Y, W, H, 0, 0, W, H);
 
+        const blobBin = atob(cvs.toDataURL('image/jpg').split(',')[1]);
+        const array = [];
+        for (let i = 0; i < blobBin.length; i++) {
+          array.push(blobBin.charCodeAt(i));
+        }
+        const file = new Blob([new Uint8Array(array)], { type: 'image/jpg' });
+
         const formData = new FormData();
-        cvs.toBlob((blob) => {
-          if (blob) formData.append('imageSrc', blob);
-          else speech('오류가 발생했습니다. 다시 시도해주세요.');
-        });
+        formData.append('imageSrc', file);
 
         try {
           const res = await axios({
