@@ -91,6 +91,7 @@ const DragMode = () => {
 
         const formData = new FormData();
         formData.append('imageSrc', file);
+        formData.append('type', 'file');
 
         try {
           const res = await axios({

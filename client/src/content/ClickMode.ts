@@ -23,6 +23,7 @@ const ClickMode = () => {
 
       const formData = new FormData();
       formData.append('imageSrc', targetElement.currentSrc);
+      formData.append('type', 'url');
 
       try {
         const res = await axios({
