@@ -81,11 +81,12 @@ const DragMode = () => {
         cvs.width = W;
         cvs.height = H;
         cvs.getContext('2d')?.drawImage(img, X, Y, W, H, 0, 0, W, H);
-        save(cvs);
 
-        const src = cvs.toDataURL('image/jpeg');
         const formData = new FormData();
-        formData.append('imageSrc', src);
+        cvs.toBlob((blob) => {
+          if (blob) formData.append('imageSrc', blob);
+          else speech('오류가 발생했습니다. 다시 시도해주세요.');
+        });
 
         try {
           const res = await axios({
@@ -109,13 +110,6 @@ const DragMode = () => {
 
     $overlay.removeEventListener('mousemove', mouseMoveEvent);
     clearCanvas();
-  };
-
-  const save = (canvas: HTMLCanvasElement) => {
-    const el = document.createElement('a');
-    el.href = canvas.toDataURL('image/jpeg');
-    el.download = '파일명.jpg';
-    el.click();
   };
 
   const resizeDragMode = () => {
