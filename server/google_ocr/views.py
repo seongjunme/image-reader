@@ -13,24 +13,29 @@ def index(request):
         return HttpResponse("method is get")
 
     elif request.method == 'POST':
-        image_path = request.POST['imageSrc']
+        #image_path = request.POST['imageSrc']
+
+        myFile = request.FILES.get("filename", None)
+        if myFile:
+            BASE_DIR = os.path.dirname(os.path.realpath(__file__))
+            dir = os.path.join(BASE_DIR, myFile.name)
+            destination = open(os.path.join(dir, myFile.name), 'wb+')
+            for chunk in myFile.chunks():
+                destination.write(chunk)
+            destination.close()
 
         client = vision.ImageAnnotatorClient()
-        # path = './egg.jpg'
+        #path = './egg.jpg'
+        print(destination)
 
-        # with io.open(path, 'rb') as image_file:
-        #    content = image_file.read()
+        with io.open(destination, 'rb') as image_file:
+            content = image_file.read()
 
-        # image = vision.Image(content=content)
+        image = vision.Image(content=content)
 
-        image = vision.Image()
+        # image = vision.Image()
         #image.source.image_uri = 'https://thumbnail8.coupangcdn.com/thumbnails/remote/q89/image/retail/images/1199319973444746-8372cd7e-ead6-4f1c-aa18-a83d8b7f60f0.jpg'
-        image.source.image_uri = image_path
-
-
-        price_candidate = []
-        card_number_candidate = []
-        date_candidate = []
+        #image.source.image_uri = image_path
 
         response = client.text_detection(image=image)
         texts = response.text_annotations
@@ -42,7 +47,6 @@ def index(request):
         content = content.replace('\n', ' ')
 
         print(content)
-
 
         if response.error.message:
             raise Exception(
