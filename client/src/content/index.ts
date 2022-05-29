@@ -1,31 +1,18 @@
-const setup = () => {
-  if (!window.onClickBody) {
-    window.onClickBody = (e: MouseEvent) => {
-      e.preventDefault();
-      e.stopPropagation();
+import ClickMode from './ClickMode';
+import DragMode from './DragMode';
+import { setupSpeechVoice } from '../utils/speech';
 
-      const targetElement = e.target as HTMLImageElement;
-      console.log(targetElement.tagName === 'IMG');
-      if (targetElement.tagName === 'IMG') {
-        console.log(targetElement.currentSrc);
-      }
-    };
-  }
-};
+(() => {
+  setupSpeechVoice();
 
-const toggleEventOnBody = () => {
-  const $body = document.querySelector('body');
-  if (!$body) return;
+  chrome.storage.sync.get(({ isClickMode, isDragMode }) => {
+    console.log('Is Click Mode? ' + isClickMode);
+    console.log('Is Drag Mode? ' + isDragMode);
 
-  chrome.storage.sync.get(({ isSystemRun }) => {
-    console.log(isSystemRun);
-    if (isSystemRun) {
-      $body.addEventListener('click', window.onClickBody);
-    } else {
-      $body.removeEventListener('click', window.onClickBody);
-    }
+    const clickMode = ClickMode();
+    const dragMode = DragMode();
+
+    isClickMode ? clickMode.run() : clickMode.exit();
+    isDragMode ? dragMode?.run() : dragMode?.exit();
   });
-};
-
-setup();
-toggleEventOnBody();
+})();
