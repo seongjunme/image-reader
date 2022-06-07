@@ -1,9 +1,12 @@
 from django.http import HttpResponse
 from django.http import JsonResponse
+from summa.summarizer import summarize
+from gensim.summarization import keywords
 import json
 from google.cloud import vision
 import io
 import os
+
 
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = './ocr-extention-348215-4c324cd8a017.json'
 
@@ -18,10 +21,12 @@ def index(request):
         print(dataType)
         image = vision.Image()
 
+        # 클릭모드
         if(dataType == 'url'):
             image_path = request.POST['imageSrc']
             image.source.image_uri = image_path
 
+        # 드래그모드
         elif(dataType == 'file'):
             print(request.FILES['imageSrc'])
             myFile = request.FILES.get("imageSrc", None)
@@ -60,15 +65,19 @@ def index(request):
         content = content.replace('/', ' ')
         content = content.replace('\n', ' ')
 
-        print(content)
+        # print(summarize(content), topk=10)
+        print(keywords(content))
 
+        print(content)
+        summary = summarize(content)
+
+        # print(content)
         if response.error.message:
             raise Exception(
                 '{}\nFor more info on error messages, check: '
                 'https://cloud.google.com/apis/design/errors'.format(
                     response.error.message))
 
-        print("check feature branch")
 
         return JsonResponse({'MESSAGE': content}, status=201)
         #return HttpResponse("hi google_ocr!")
