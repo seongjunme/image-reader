@@ -9,6 +9,7 @@ import {
 } from './canvas';
 import { createOverlay, removeOverlay } from './overlay';
 import { cancelSpeech, speech } from '../utils/speech';
+import { kakaoSpeech } from '../utils/speech';
 
 const ClickMode = () => {
   const onClickBody = async (e: MouseEvent) => {
@@ -37,7 +38,8 @@ const ClickMode = () => {
         const {
           data: { MESSAGE },
         } = res;
-        speech(MESSAGE);
+        // speech(MESSAGE);
+        kakaoSpeech(MESSAGE);
       } catch (e) {
         console.log(e);
       }

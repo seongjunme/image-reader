@@ -1,14 +1,18 @@
 from django.http import HttpResponse
 from django.http import JsonResponse
-from summa.summarizer import summarize
-from gensim.summarization import keywords
 import json
 from google.cloud import vision
 import io
 import os
+import requests
+import urllib
+import ssl
+from dotenv import load_dotenv
+from utils.cvt2xml import cvt2xml
 
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = './ocr-extention-348215-4c324cd8a017.json'
+load_dotenv()
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "./ocr-extention-348215-29be791daffe.json"
 
 def index(request):
 
@@ -39,39 +43,44 @@ def index(request):
                     for chunk in myFile.chunks():
                         destination.write(chunk)
                     destination.close()
-                # destination = open(dir+'.jpg', 'wb+')
-                # for chunk in myFile.chunks():
-                #     destination.write(chunk)
-                # destination.close()
-                print('-------')
-                print(destination)
 
                 with io.open(dir + '.jpg', 'rb') as image_file:
                     content = image_file.read()
                 image = vision.Image(content=content)
-
-        #path = './egg.jpg'
-        # image.source.image_uri = 'https://thumbnail8.coupangcdn.com/thumbnails/remote/q89/image/retail/images/1199319973444746-8372cd7e-ead6-4f1c-aa18-a83d8b7f60f0.jpg'
 
         client = vision.ImageAnnotatorClient()
         response = client.text_detection(image=image)
 
         # 문자열 처리
         texts = response.text_annotations
-        print('Texts:')
-
         content = texts[0].description
-        content = content.replace(',', ' ')
-        content = content.replace('/', ' ')
-        content = content.replace('\n', ' ')
-
-        # print(summarize(content), topk=10)
-        print(keywords(content))
-
-        print(content)
-        summary = summarize(content)
-
         # print(content)
+        xml = cvt2xml(content)
+        print(xml)
+        
+        # ctx = ssl.create_default_context()
+        # ctx.check_hostname = False
+        # ctx.verify_mode = ssl.CERT_NONE
+
+        # speechApiRequest = urllib.request.Request('https://kakaoi-newtone-openapi.kakao.com/v1/synthesize',
+        #     data=xml,
+        # )
+        
+        # speechApiRequest.add_header('Content-Type', 'application/xml')
+        # speechApiRequest.add_header('Authorization', 'KakaoAK ' + os.environ.get("KAKAO_API_KEY"))
+        # speechApiResponse = urllib.request.urlopen(speechApiRequest, context=ctx)
+        # speechApiResponse = requests.post(
+        #     'https://kakaoi-newtone-openapi.kakao.com/v1/synthesize', 
+        #     headers={
+        #         'Content-Type': 'application/xml',
+        #         'Authorization': 'KakaoAK ' + os.environ.get("KAKAO_API_KEY"),
+        #     }, 
+        #     data=xml,
+        #     verify=False,
+        # )
+        
+        # print(speechApiResponse)
+        
         if response.error.message:
             raise Exception(
                 '{}\nFor more info on error messages, check: '
@@ -79,6 +88,5 @@ def index(request):
                     response.error.message))
 
 
-        return JsonResponse({'MESSAGE': content}, status=201)
-        #return HttpResponse("hi google_ocr!")
+        return JsonResponse({'MESSAGE': xml}, status=201)
 
