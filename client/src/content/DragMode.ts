@@ -9,7 +9,7 @@ import {
   resizeCanvas,
 } from './canvas';
 import { createOverlay, removeOverlay } from './overlay';
-import { speech } from '../utils/speech';
+import { speech, kakaoSpeech } from '../utils/speech';
 
 const DragMode = () => {
   let startX = -1,
@@ -105,7 +105,7 @@ const DragMode = () => {
           const {
             data: { MESSAGE },
           } = res;
-          speech(MESSAGE);
+          kakaoSpeech(MESSAGE);
         } catch (e) {
           console.log(e);
         }
