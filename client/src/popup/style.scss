@@ -1,20 +1,118 @@
+html {
+  height: 10rem;
+}
+
 .layout {
   display: flex;
   flex-direction: row;
+  justify-content: center;
+}
+
+.box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 6.875rem;
+  height: 3.4375rem;
+  margin: 0.625rem;
+  font-size: 1.125rem;
+  font-family: 'paybooc-Light', sans-serif;
+}
+
+.type {
+  @extend .box;
+  color: rgba(0, 0, 0, 0.87);
+}
+
+.toggle_wrapper {
+  @extend .box;
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  #toggle1 {
+    position: absolute;
+    /* hidden */
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+  }
+
+  #toggle2 {
+    position: absolute;
+    /* hidden */
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+  }
+
+  .toggle_label {
+    position: relative;
+    cursor: pointer;
+    display: inline-block;
+    width: 58px;
+    height: 28px;
+    background: #fff;
+    border: 2px solid #a3a1a1;
+    border-radius: 20px;
+    transition: 0.2s;
+
+    &:hover {
+      background: #efefef;
+    }
+
+    .onf_btn {
+      position: absolute;
+      top: 5px;
+      left: 5px;
+      display: inline-block;
+      width: 19px;
+      height: 19px;
+      border-radius: 20px;
+      background: #a3a1a1;
+      transition: 0.2s;
+    }
+  }
+
+  /* checking style */
+  #toggle1:checked + .toggle_label {
+    background: #ce6d39;
+    border: 2px solid #ce6d39;
+  }
+
+  #toggle1:checked + .toggle_label:hover {
+    background: #ce6d39;
+  }
+
+  /* move */
+  #toggle1:checked + .toggle_label .onf_btn {
+    left: 33px;
+    background: #fff;
+    box-shadow: 1px 2px 3px #00000020;
+  }
+
+  #toggle2:checked + .toggle_label {
+    background: #ce6d39;
+    border: 2px solid #ce6d39;
+  }
+
+  #toggle2:checked + .toggle_label:hover {
+    background: #ce6d39;
+  }
+
+  /* move */
+  #toggle2:checked + .toggle_label .onf_btn {
+    left: 33px;
+    background: #fff;
+    box-shadow: 1px 2px 3px #00000020;
+  }
 }
 
 .switch {
-  width: 6.875rem;
-  height: 3.4375rem;
-  display: flex;
+  @extend .box;
   flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  font-size: 1.125rem;
-  margin: 0.625rem;
   border: 0;
   border-radius: 15px;
-  font-family: 'paybooc-Light', sans-serif;
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
   text-decoration: none;
   font-weight: 600;
