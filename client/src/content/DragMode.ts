@@ -9,7 +9,7 @@ import {
   resizeCanvas,
 } from './canvas';
 import { createOverlay, removeOverlay } from './overlay';
-import { speech, kakaoSpeech } from '../utils/speech';
+import { kakaoSpeech } from '../utils/speech';
 
 const DragMode = () => {
   let startX = -1,
@@ -105,7 +105,7 @@ const DragMode = () => {
           const {
             data: { MESSAGE },
           } = res;
-          kakaoSpeech(MESSAGE);
+          kakaoSpeech(MESSAGE, 'drag');
         } catch (e) {
           console.log(e);
         }
@@ -114,7 +114,6 @@ const DragMode = () => {
     });
 
     $overlay.removeEventListener('mousemove', mouseMoveEvent);
-    clearCanvas();
   };
 
   const resizeDragMode = () => {

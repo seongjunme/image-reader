@@ -1,5 +1,7 @@
 import axios from 'axios';
 import env from '../../env.js';
+import { clearCanvas, clearRecCanvas } from '../content/canvas';
+import { removeOverlay } from '../content/overlay';
 
 export const setupSpeechVoice = () => {
   speechSynthesis.onvoiceschanged = () => {
@@ -19,7 +21,7 @@ export const speech = (text: string, once = true) => {
   window.speechSynthesis.speak(utterance);
 };
 
-export const kakaoSpeech = async (xml: string) => {
+export const kakaoSpeech = async (xml: string, mode: string) => {
   try {
     const res = await axios({
       method: 'post',
@@ -39,6 +41,13 @@ export const kakaoSpeech = async (xml: string) => {
       src.buffer = buffer;
       src.connect(context.destination);
       src.start(0);
+      src.onended =
+        mode === 'click'
+          ? () => {
+              clearRecCanvas();
+              removeOverlay();
+            }
+          : () => clearCanvas();
 
       document.querySelector('#my-overlay')?.addEventListener(
         'click',
