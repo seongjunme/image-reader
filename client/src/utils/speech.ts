@@ -34,10 +34,19 @@ export const kakaoSpeech = async (xml: string) => {
 
     const context = new AudioContext();
     context.decodeAudioData(res.data, (buffer) => {
+      const context = new AudioContext();
       const src = context.createBufferSource();
       src.buffer = buffer;
       src.connect(context.destination);
       src.start(0);
+
+      document.querySelector('#my-overlay')?.addEventListener(
+        'click',
+        () => {
+          src.stop(0);
+        },
+        { once: true },
+      );
     });
   } catch (e) {
     speech('문자 추출에 실패했습니다.');
