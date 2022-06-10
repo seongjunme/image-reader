@@ -1,7 +1,13 @@
-from xml.etree.ElementTree import Element, tostring
+from xml.etree.ElementTree import Element, tostring, ElementTree, SubElement
 
 def cvt2xml(text): 
-  speak = Element('speak')
-  speak.text = text
-  
-  return tostring(speak, encoding='unicode')
+    text = text.replace('\n', '<break />')
+    
+    xml = f' \
+    <speak>\
+      <prosody rate="slow" volume="soft">\
+        {text}\
+      </prosody>\
+    </speak>'
+    
+    return xml

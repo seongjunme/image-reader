@@ -58,29 +58,6 @@ def index(request):
         xml = cvt2xml(content)
         print(xml)
         
-        # ctx = ssl.create_default_context()
-        # ctx.check_hostname = False
-        # ctx.verify_mode = ssl.CERT_NONE
-
-        # speechApiRequest = urllib.request.Request('https://kakaoi-newtone-openapi.kakao.com/v1/synthesize',
-        #     data=xml,
-        # )
-        
-        # speechApiRequest.add_header('Content-Type', 'application/xml')
-        # speechApiRequest.add_header('Authorization', 'KakaoAK ' + os.environ.get("KAKAO_API_KEY"))
-        # speechApiResponse = urllib.request.urlopen(speechApiRequest, context=ctx)
-        # speechApiResponse = requests.post(
-        #     'https://kakaoi-newtone-openapi.kakao.com/v1/synthesize', 
-        #     headers={
-        #         'Content-Type': 'application/xml',
-        #         'Authorization': 'KakaoAK ' + os.environ.get("KAKAO_API_KEY"),
-        #     }, 
-        #     data=xml,
-        #     verify=False,
-        # )
-        
-        # print(speechApiResponse)
-        
         if response.error.message:
             raise Exception(
                 '{}\nFor more info on error messages, check: '
