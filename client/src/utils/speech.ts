@@ -38,24 +38,33 @@ export const kakaoSpeech = async (xml: string, mode: string) => {
     context.decodeAudioData(res.data, (buffer) => {
       const context = new AudioContext();
       const src = context.createBufferSource();
+
+      src.onended = () => {
+        if (mode === 'click') {
+          clearRecCanvas();
+          removeOverlay();
+        } else {
+          clearCanvas();
+        }
+        chrome.storage.sync.set({ isSpeeching: false });
+      };
+
       src.buffer = buffer;
       src.connect(context.destination);
-      src.start(0);
-      src.onended =
-        mode === 'click'
-          ? () => {
-              clearRecCanvas();
-              removeOverlay();
-            }
-          : () => clearCanvas();
 
-      document.querySelector('#my-overlay')?.addEventListener(
-        'click',
-        () => {
-          src.stop(0);
-        },
-        { once: true },
-      );
+      chrome.storage.sync.get(({ isSpeeching }) => {
+        if (isSpeeching) {
+          src.start(0);
+          document.querySelector('#my-overlay')?.addEventListener(
+            'click',
+            () => {
+              src.stop(0);
+              chrome.storage.sync.set({ isSpeeching: false });
+            },
+            { once: true },
+          );
+        }
+      });
     });
   } catch (e) {
     speech('문자 추출에 실패했습니다.');

@@ -1,6 +1,7 @@
-import axios from 'axios';
 import { calculateBox } from '@utils/calculate';
 import debounce from '@utils/debounce';
+import { createOverlay, removeOverlay } from './overlay';
+import { request } from '@utils/request';
 import {
   clearCanvas,
   createCanvas,
@@ -8,8 +9,6 @@ import {
   removeCanvas,
   resizeCanvas,
 } from './canvas';
-import { createOverlay, removeOverlay } from './overlay';
-import { kakaoSpeech } from '../utils/speech';
 
 const DragMode = () => {
   let startX = -1,
@@ -93,22 +92,17 @@ const DragMode = () => {
         formData.append('imageSrc', file);
         formData.append('type', 'file');
 
-        try {
-          const res = await axios({
-            method: 'post',
-            url: 'http://localhost:8000/google_ocr/',
-            data: formData,
-            headers: {
-              'Content-Type': 'multipart/form-data',
-            },
-          });
-          const {
-            data: { MESSAGE },
-          } = res;
-          kakaoSpeech(MESSAGE, 'drag');
-        } catch (e) {
-          console.log(e);
-        }
+        chrome.storage.sync.set({ isSpeeching: true });
+        document.querySelector('#my-overlay')?.addEventListener(
+          'click',
+          () => {
+            chrome.storage.sync.set({ isSpeeching: false });
+            clearCanvas();
+          },
+          { once: true },
+        );
+
+        request({ formData, mode: 'drag' });
       });
       port.disconnect();
     });
