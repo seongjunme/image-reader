@@ -2,6 +2,11 @@ server/*.png
 
 server/*.jpg
 
-server/ocr-extention-348215-4c324cd8a017.json
+ocr-extention*
 
 server/text.txt
+
+.env
+
+__pycache__/
+*.pyc

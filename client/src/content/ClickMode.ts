@@ -1,5 +1,7 @@
 import debounce from '@utils/debounce';
-import axios from 'axios';
+import { createOverlay, removeOverlay } from './overlay';
+import { cancelSpeech, speech } from '@utils/speech';
+import { request } from '@utils/request';
 import {
   clearRecCanvas,
   createCanvas,
@@ -7,8 +9,6 @@ import {
   removeCanvas,
   resizeCanvas,
 } from './canvas';
-import { createOverlay, removeOverlay } from './overlay';
-import { cancelSpeech, speech } from '../utils/speech';
 
 const ClickMode = () => {
   const onClickBody = async (e: MouseEvent) => {
@@ -25,22 +25,8 @@ const ClickMode = () => {
       formData.append('imageSrc', targetElement.currentSrc);
       formData.append('type', 'url');
 
-      try {
-        const res = await axios({
-          method: 'post',
-          url: 'http://localhost:8000/google_ocr/',
-          data: formData,
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        });
-        const {
-          data: { MESSAGE },
-        } = res;
-        speech(MESSAGE);
-      } catch (e) {
-        console.log(e);
-      }
+      await chrome.storage.sync.set({ isSpeeching: true });
+      request({ formData, mode: 'click' });
     }
   };
 
@@ -56,9 +42,10 @@ const ClickMode = () => {
       drawRecCanvas();
       const $overlay = createOverlay({ type: 'CLICK_MODE' });
       $overlay.addEventListener('click', () => {
-        cancelSpeech();
+        speech('낭독을 중지합니다.');
         clearRecCanvas();
         removeOverlay();
+        chrome.storage.sync.set({ isSpeeching: false });
       });
     };
 

@@ -4,8 +4,15 @@ import json
 from google.cloud import vision
 import io
 import os
+import requests
+import urllib
+import ssl
+from dotenv import load_dotenv
+from utils.cvt2xml import cvt2xml
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = './ocr-extention-348215-4c324cd8a017.json'
+load_dotenv()
+
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "./ocr-extention-348215-29be791daffe.json"
 
 def index(request):
 
@@ -18,10 +25,12 @@ def index(request):
         print(dataType)
         image = vision.Image()
 
+        # 클릭모드
         if(dataType == 'url'):
             image_path = request.POST['imageSrc']
             image.source.image_uri = image_path
 
+        # 드래그모드
         elif(dataType == 'file'):
             print(request.FILES['imageSrc'])
             myFile = request.FILES.get("imageSrc", None)
@@ -34,42 +43,30 @@ def index(request):
                     for chunk in myFile.chunks():
                         destination.write(chunk)
                     destination.close()
-                # destination = open(dir+'.jpg', 'wb+')
-                # for chunk in myFile.chunks():
-                #     destination.write(chunk)
-                # destination.close()
-                print('-------')
-                print(destination)
 
                 with io.open(dir + '.jpg', 'rb') as image_file:
                     content = image_file.read()
                 image = vision.Image(content=content)
 
-        #path = './egg.jpg'
-        # image.source.image_uri = 'https://thumbnail8.coupangcdn.com/thumbnails/remote/q89/image/retail/images/1199319973444746-8372cd7e-ead6-4f1c-aa18-a83d8b7f60f0.jpg'
-
         client = vision.ImageAnnotatorClient()
         response = client.text_detection(image=image)
 
-        # 문자열 처리
-        texts = response.text_annotations
-        print('Texts:')
-
-        content = texts[0].description
-        content = content.replace(',', ' ')
-        content = content.replace('/', ' ')
-        content = content.replace('\n', ' ')
-
-        print(content)
-
+        if (response):
+            # 문자열 처리
+            texts = response.text_annotations
+            content = texts[0].description
+        else:
+            content = '추출된 문자가 없습니다.'
+            
+        xml = cvt2xml(content)
+        print(xml)
+        
         if response.error.message:
             raise Exception(
                 '{}\nFor more info on error messages, check: '
                 'https://cloud.google.com/apis/design/errors'.format(
                     response.error.message))
 
-        print("check feature branch")
 
-        return JsonResponse({'MESSAGE': content}, status=201)
-        #return HttpResponse("hi google_ocr!")
+        return JsonResponse({'MESSAGE': xml}, status=201)
 
