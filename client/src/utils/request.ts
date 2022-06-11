@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { kakaoSpeech } from './speech';
+import { kakaoSpeech, speech } from './speech';
 
 export const request = async ({
   formData,
@@ -24,5 +24,6 @@ export const request = async ({
     kakaoSpeech(MESSAGE, mode);
   } catch (e) {
     console.log(e);
+    speech('글자 추출에 실패했습니다. \n 다시 시도 해주세요.');
   }
 };

@@ -2,6 +2,7 @@ import { calculateBox } from '@utils/calculate';
 import debounce from '@utils/debounce';
 import { createOverlay, removeOverlay } from './overlay';
 import { request } from '@utils/request';
+import { cancelSpeech, speech } from '@utils/speech';
 import {
   clearCanvas,
   createCanvas,
@@ -92,12 +93,13 @@ const DragMode = () => {
         formData.append('imageSrc', file);
         formData.append('type', 'file');
 
-        chrome.storage.sync.set({ isSpeeching: true });
+        await chrome.storage.sync.set({ isSpeeching: true });
         document.querySelector('#my-overlay')?.addEventListener(
           'click',
-          () => {
-            chrome.storage.sync.set({ isSpeeching: false });
+          async () => {
+            speech('낭독을 중지합니다.');
             clearCanvas();
+            await chrome.storage.sync.set({ isSpeeching: false });
           },
           { once: true },
         );

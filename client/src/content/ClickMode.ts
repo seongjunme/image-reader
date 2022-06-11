@@ -1,6 +1,6 @@
 import debounce from '@utils/debounce';
 import { createOverlay, removeOverlay } from './overlay';
-import { cancelSpeech } from '@utils/speech';
+import { cancelSpeech, speech } from '@utils/speech';
 import { request } from '@utils/request';
 import {
   clearRecCanvas,
@@ -25,7 +25,7 @@ const ClickMode = () => {
       formData.append('imageSrc', targetElement.currentSrc);
       formData.append('type', 'url');
 
-      chrome.storage.sync.set({ isSpeeching: true });
+      await chrome.storage.sync.set({ isSpeeching: true });
       request({ formData, mode: 'click' });
     }
   };
@@ -42,10 +42,10 @@ const ClickMode = () => {
       drawRecCanvas();
       const $overlay = createOverlay({ type: 'CLICK_MODE' });
       $overlay.addEventListener('click', () => {
-        chrome.storage.sync.set({ isSpeeching: false });
-        cancelSpeech();
+        speech('낭독을 중지합니다.');
         clearRecCanvas();
         removeOverlay();
+        chrome.storage.sync.set({ isSpeeching: false });
       });
     };
 

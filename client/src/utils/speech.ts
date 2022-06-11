@@ -17,6 +17,8 @@ export const speech = (text: string, once = true) => {
   const utterance = new SpeechSynthesisUtterance(text);
   const voice = window.voices.find((voice) => voice.default) ?? null;
   utterance.voice = voice;
+  utterance.rate = 0.9;
+  utterance.volume = 0.3;
   if (once) utterance.onend = cancelSpeech;
   window.speechSynthesis.speak(utterance);
 };
@@ -35,31 +37,32 @@ export const kakaoSpeech = async (xml: string, mode: string) => {
     });
 
     const context = new AudioContext();
-    context.decodeAudioData(res.data, (buffer) => {
-      const context = new AudioContext();
-      const src = context.createBufferSource();
+    const src = context.createBufferSource();
 
-      src.onended = () => {
+    context.decodeAudioData(res.data, (buffer) => {
+      src.onended = async () => {
         if (mode === 'click') {
           clearRecCanvas();
           removeOverlay();
         } else {
           clearCanvas();
         }
-        chrome.storage.sync.set({ isSpeeching: false });
+        speech('낭독을 중지합니다.');
+        await chrome.storage.sync.set({ isSpeeching: false });
       };
 
       src.buffer = buffer;
       src.connect(context.destination);
 
-      chrome.storage.sync.get(({ isSpeeching }) => {
+      chrome.storage.sync.get(async ({ isSpeeching }) => {
         if (isSpeeching) {
           src.start(0);
           document.querySelector('#my-overlay')?.addEventListener(
             'click',
-            () => {
+            async () => {
               src.stop(0);
-              chrome.storage.sync.set({ isSpeeching: false });
+              speech('낭독을 중지합니다.');
+              await chrome.storage.sync.set({ isSpeeching: false });
             },
             { once: true },
           );
@@ -67,6 +70,6 @@ export const kakaoSpeech = async (xml: string, mode: string) => {
       });
     });
   } catch (e) {
-    speech('문자 추출에 실패했습니다.');
+    speech('글자 추출에 실패했습니다. \n 다시 시도 해주세요.');
   }
 };

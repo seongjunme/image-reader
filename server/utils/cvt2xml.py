@@ -6,6 +6,7 @@ def cvt2xml(text):
     xml = f' \
     <speak>\
       <prosody rate="slow" volume="soft">\
+        낭독을 시작합니다.<break />\
         {text}\
       </prosody>\
     </speak>'

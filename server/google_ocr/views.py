@@ -10,8 +10,8 @@ import ssl
 from dotenv import load_dotenv
 from utils.cvt2xml import cvt2xml
 
-
 load_dotenv()
+
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "./ocr-extention-348215-29be791daffe.json"
 
 def index(request):
@@ -51,10 +51,13 @@ def index(request):
         client = vision.ImageAnnotatorClient()
         response = client.text_detection(image=image)
 
-        # 문자열 처리
-        texts = response.text_annotations
-        content = texts[0].description
-        # print(content)
+        if (response):
+            # 문자열 처리
+            texts = response.text_annotations
+            content = texts[0].description
+        else:
+            content = '추출된 문자가 없습니다.'
+            
         xml = cvt2xml(content)
         print(xml)
         
