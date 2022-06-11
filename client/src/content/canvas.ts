@@ -35,6 +35,7 @@ export const resizeCanvas = ({
   height: number;
 }) => {
   const $canvas = document.querySelector('#imageReader') as HTMLCanvasElement;
+  if (!$canvas) return;
   $canvas.style.top = `${top}px`;
   $canvas.style.left = `${left}px`;
   $canvas.width = width;
@@ -43,6 +44,7 @@ export const resizeCanvas = ({
 
 export const drawRecCanvas = () => {
   const $canvas = document.querySelector('#imageReader') as HTMLCanvasElement;
+  if (!$canvas) return;
   const context = $canvas.getContext('2d');
   if (!context) return;
 
@@ -56,6 +58,7 @@ export const drawRecCanvas = () => {
 
 export const clearRecCanvas = () => {
   const $canvas = document.querySelector('#imageReader') as HTMLCanvasElement;
+  if (!$canvas) return;
   const context = $canvas.getContext('2d');
   if (!context) return;
   context.clearRect(0, 0, $canvas.width, $canvas.height);
@@ -83,6 +86,7 @@ export const drawCaptureBoxCanvas = ({
   h: number;
 }) => {
   const $canvas = document.querySelector('#imageReader') as HTMLCanvasElement;
+  if (!$canvas) return;
   const context = $canvas.getContext('2d');
   if (!context) return;
 
@@ -96,6 +100,7 @@ export const drawCaptureBoxCanvas = ({
 
 export const clearCanvas = () => {
   const $canvas = document.querySelector('#imageReader') as HTMLCanvasElement;
+  if (!$canvas) return;
   const context = $canvas.getContext('2d');
   if (!context) return;
   context.clearRect(0, 0, $canvas.width, $canvas.height);
