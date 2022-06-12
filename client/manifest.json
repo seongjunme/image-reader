@@ -19,6 +19,6 @@
   "action": {
     "default_popup": "dist/popup.html"
   },
-  "permissions": ["storage", "tabs", "scripting"],
+  "permissions": ["storage", "tabs", "scripting", "activeTab"],
   "host_permissions": ["https://*/*", "http://*/*", "<all_urls>"]
 }
