@@ -2,6 +2,9 @@
   "name": "Image Reader",
   "description": "Image reader on a website for the blind",
   "version": "1.0",
+  "icons": {
+    "128": "./icon.png"
+  },
   "manifest_version": 3,
 
   "background": {
