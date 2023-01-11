@@ -1,6 +1,3 @@
-# Image Reader
-
-<br />
 
 ## 📝 프로젝트 소개
 
@@ -22,7 +19,7 @@
 | Front-end       | ![HTML](https://img.shields.io/badge/HTML-gray?logo=html5) ![Sass](https://img.shields.io/badge/Sass-gray?logo=Sass)          ![TypeScript](https://img.shields.io/badge/TypeScript-gray?logo=TypeScript)       ![Webpack](https://img.shields.io/badge/Webpack-gray?logo=webpack)                                                                                                                                                      |
 | Back-end        | ![Python](https://img.shields.io/badge/python-gray?logo=python) ![Django](https://img.shields.io/badge/Django-gray?logo=django) 
 | Production      | ![AWS](https://img.shields.io/badge/AWS-gray?logo=amazon)                                                                                                                                                                                                    |
-| Code Management | ![Git](https://img.shields.io/badge/Git-v2.36.0-red?logo=Git) ![github](https://img.shields.io/badge/GitHub-gray?logo=github)                                                                                                                                                |
+| Code Management | ![Git](https://img.shields.io/badge/Git-gray?logo=Git) ![github](https://img.shields.io/badge/GitHub-gray?logo=github)                                                                                                                                                |
 
 <br />
 
